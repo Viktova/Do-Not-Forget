@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset=utf-8>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Do Not Forget</title>
+  <base href="<?php echo $SCHEME.'://'.$HOST.':'.$PORT.$BASE.'/'; ?>" />
+  <meta name="description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting (but you could try).">
+  <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgUlEQVR4AWPgs471ErSNfSxoG/efFAzSA9LLQJ5mhCEMIAYlGG4AAYDfAGKxV07r/49fvoJo0g3wBmr69v0HyDEgGsQn6AVMzQgAdglhF2BqxnQBBZpxeoFYzfhd8PPXbzyaCRtASDNuL8D4//79A3HBLtENKcSfkCjBFGcmirMzABzRKoaQg+KfAAAAAElFTkSuQmCC" rel="icon" type="image/x-icon" />
+
+	<meta property="og:title" content="Do Not Forget Me - Single page note-taking for lists, reminders, to-dos. And sexting.">
+	<meta property="og:site_name" content="Do Not Forget Me">
+	<meta property="og:image" content="<?php echo $SCHEME.'://'.$HOST.'/'; ?>ui/images/facebook-1024x1024.png">
+	<meta property="og:image:width" content="1024">
+	<meta property="og:image:height" content="1024">
+	<meta property="og:url" content="http://do-not-forget.me">
+	<meta property="og:description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting.">
+	<meta property="og:type" content="article">
+
+  <link rel="stylesheet" href="ui/css/style.css?v=13">
+<script>
+var synchronization = false;
+</script>
+</head>
+<body>
+<div id="layout" class="pure-g">
+    <div class="sidebar pure-u-1 pure-u-md-1-4">
+        <div class="header">
+            <h1 class="brand-title">Do Not Forget</h1>
+			<h2 class="brand-tagline">Jot down that thought before it flies away.</h2>
+<?php
+if($user['logged_in']==='ok'){
+// Good, we can now start autosaving.
+?>
+<script>
+synchronization = true;
+</script>
+<input type="hidden"  id="user_id" name="userid" value="<?php echo $user['id'];?>">
+<input type="hidden" id="user_email" name="email" value="<?php echo $user['email'];?>">
+<input type="hidden" id="user_memo" name="memo" value="<?php echo addslashes($user['memo']);?>">
+<input type="hidden" id="user_last_modified" name="last_modified" value="<?php echo $user['last_modified'];?>">
+
+
+
+<p  class="user-details">
+	<span class="image-clipper">
+
+	<?php if($user['image']){ ?>
+	
+	<img src="<?php echo $user['image']; ?>">
+	
+	<?php }else{ ?>
+	
+	<a href="http://thecatapi.com" target="_blank" title="cats!"><img src="http://thecatapi.com/api/images/get?format=src&type=png,gif&size=small"></a>
+	
+	<?php } ?>
+	</span>
+	<br>Hola <span class="firstname"><?= $user['first']?></span>. How's life?<br>
+	<br>Your notes are now being synced on all your browsers, at this same url.<br><br>
+	<span id="sync-status-marker" class="sync-status"></span>
+	
+	<br><br><a href="/logout">log out</a>
+	
+	</p>
+<small id="debugger">last local save: <span id="localLastModified"></span><br>last remote save: <span id="remoteLastModified"></span></small>
+
+<?php
+}else{
+	?>
+	<p>Bonus: login via your <a href="/auth/facebook<?php if (SERVER == 'dev'){ echo "-test";}?>">Facebook</a>, <a href="/auth/google">Google</a> or <a href="/auth/github">Github</a> account to keep these notes synced on all your browsers.</p>
+
+<?php
+}
+?>
+
+        </div>
+        <p id="credits">
+	        &copy; <?= date('Y');?> <a href="https://pixeline.be">pixeline.be</a>
+	    </p>
+    </div>
+
+    <div class="content pure-u-1 pure-u-md-3-4">
+        <div>
+            <!-- A wrapper for all the blog posts -->
+            <div class="posts">
+	            <header class="content-subhead">
+
+		            <input type="button" id="clear" value="Erase">
+					<h1>Memos</h1>
+	            </header>
+				<section class="post">
+					<ol id="editable" contenteditable="true" spellcheck="false">
+						<li>Whatever you write here will be saved in your browser's local memory storage.</li>
+						<li>Keep this page opened in a tab  at all time; it's especially useful for reminders, to-do lists, anything you mind comes up with that has potential value.</li>
+						<li>Go ahead, replace this text with whatever you should not forget. <span class="pilcrow">|</span></li>
+					</ol>
+				</section>
+				<footer class="content-footer">
+					
+				</footer>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="ui/js/min/dnfm-min.js?v=3"></script>
+<?php
+if (SERVER ==='live'){
+?>
+  <script>
+	   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-162823-32', 'auto');
+  ga('send', 'pageview');
+  </script>
+<?
+
+}
+?>
+</body>
+</html>

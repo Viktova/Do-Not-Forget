@@ -1,0 +1,167 @@
+TWITTER:
+
+Array
+(
+    [auth] => Array
+        (
+            [uid] => 147629971
+            [info] => Array
+                (
+                    [name] => Alexandre Plennevaux
+                    [nickname] => aplennevaux
+                    [urls] => Array
+                        (
+                            [twitter] => http://twitter.com/aplennevaux
+                            [website] => http://t.co/AdEWRfzSRT
+                        )
+
+                    [location] => Bruxelles, Belgique
+                    [description] => As a kid, i fell into the toilet. I eventually got out of it, though i'm still not sure through which outlet.
+I also tweet as @pixeline for pro web stuff.
+                    [image] => http://pbs.twimg.com/profile_images/556156187142402049/00KcXNqB_normal.jpeg
+                )
+
+            [credentials] => Array
+                (
+                    [token] => 147629971-wYNwSKNwrMJlrveMXfAeyGnQOFigtW6SeeDCs4e3
+                    [secret] => CNLDvqW2BDcqEdHHCGueFs9FVzXJT8aL140tmyJAdJZs4
+                )
+
+            [raw] => Array
+                (
+                    [id] => 147629971
+                    [id_str] => 147629971
+                    [name] => Alexandre Plennevaux
+                    [screen_name] => aplennevaux
+                    [location] => Bruxelles, Belgique
+                    [description] => As a kid, i fell into the toilet. I eventually got out of it, though i'm still not sure through which outlet.
+I also tweet as @pixeline for pro web stuff.
+                    [url] => http://t.co/AdEWRfzSRT
+                    [entities] => Array
+                        (
+                            [url] => Array
+                                (
+                                    [urls] => Array
+                                        (
+                                            [0] => Array
+                                                (
+                                                    [url] => http://t.co/AdEWRfzSRT
+                                                    [expanded_url] => http://thatsthespir.it
+                                                    [display_url] => thatsthespir.it
+                                                    [indices] => Array
+                                                        (
+                                                            [0] => 0
+                                                            [1] => 22
+                                                        )
+
+                                                )
+
+                                        )
+
+                                )
+
+                            [description] => Array
+                                (
+                                    [urls] => Array
+                                        (
+                                        )
+
+                                )
+
+                        )
+
+                    [protected] => 0
+                    [followers_count] => 655
+                    [friends_count] => 274
+                    [listed_count] => 38
+                    [created_at] => Mon May 24 16:48:34 +0000 2010
+                    [favourites_count] => 549
+                    [utc_offset] => 7200
+                    [time_zone] => Brussels
+                    [geo_enabled] => 1
+                    [verified] => 0
+                    [statuses_count] => 6644
+                    [lang] => fr
+                    [contributors_enabled] => 0
+                    [is_translator] => 0
+                    [is_translation_enabled] => 0
+                    [profile_background_color] => 505557
+                    [profile_background_image_url] => http://abs.twimg.com/images/themes/theme14/bg.gif
+                    [profile_background_image_url_https] => https://abs.twimg.com/images/themes/theme14/bg.gif
+                    [profile_background_tile] => 0
+                    [profile_image_url] => http://pbs.twimg.com/profile_images/556156187142402049/00KcXNqB_normal.jpeg
+                    [profile_image_url_https] => https://pbs.twimg.com/profile_images/556156187142402049/00KcXNqB_normal.jpeg
+                    [profile_banner_url] => https://pbs.twimg.com/profile_banners/147629971/1402823937
+                    [profile_link_color] => BFB987
+                    [profile_sidebar_border_color] => 000000
+                    [profile_sidebar_fill_color] => C0DFEC
+                    [profile_text_color] => 333333
+                    [profile_use_background_image] => 1
+                    [default_profile] => 0
+                    [default_profile_image] => 0
+                    [following] => 0
+                    [follow_request_sent] => 0
+                    [notifications] => 0
+                )
+
+            [provider] => Twitter
+        )
+
+    [timestamp] => 2015-06-05T20:46:32+00:00
+    [signature] => l83et4lpt8gwsw8oo8k4g0c8scs0ggg
+)
+1
+
+
+
+
+
+---------------------
+FACEBOOK:
+
+Array
+(
+    [auth] => Array
+        (
+            [provider] => Facebook-test
+            [uid] => 10205898482193986
+            [info] => Array
+                (
+                    [name] => Alexandre Plennevaux
+                    [image] => https://graph.facebook.com/10205898482193986/picture?type=square
+                    [email] => alexandre@pixeline.be
+                    [first_name] => Alexandre
+                    [last_name] => Plennevaux
+                    [urls] => Array
+                        (
+                            [facebook] => https://www.facebook.com/app_scoped_user_id/10205898482193986/
+                        )
+
+                )
+
+            [credentials] => Array
+                (
+                    [token] => CAAFazZCdlUkUBAJ5v5iISJpj3xmYZAdfPKyL7B8R7ZB5moZBgGtZAqXcipRKCZAUcQWwF5tbLEcOFZBRudS0whRt5dsZAdYoodLLxn85474GdhGPw41WD3I5fMQ9NEaOZBPNfFd3ahPWGDkA1a5XxJfW0UZAiZAOuvNlwlVuruQaa0ZAsdZBEgRQG5t5BQA2U6zmzJNcihT7nyCvQYZCHMmoO1pkkp
+                    [expires] => 2015-08-04T13:20:43+02:00
+                )
+
+            [raw] => Array
+                (
+                    [id] => 10205898482193986
+                    [email] => alexandre@pixeline.be
+                    [first_name] => Alexandre
+                    [gender] => male
+                    [last_name] => Plennevaux
+                    [link] => https://www.facebook.com/app_scoped_user_id/10205898482193986/
+                    [locale] => fr_FR
+                    [name] => Alexandre Plennevaux
+                    [timezone] => 2
+                    [updated_time] => 2015-04-14T15:15:37+0000
+                    [verified] => 1
+                )
+
+        )
+
+    [timestamp] => 2015-06-05T13:20:43+02:00
+    [signature] => q0a62z1zbz4kwc8wkoss84ow8w4w4ko
+)
