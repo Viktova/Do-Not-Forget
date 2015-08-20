@@ -17,7 +17,7 @@
 	<meta property="og:description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting.">
 	<meta property="og:type" content="article">
 
-  <link rel="stylesheet" href="ui/css/style.css?v=14">
+  <link rel="stylesheet" href="ui/css/style.css?v=18">
 <script>
 var synchronization = false;
 </script>
@@ -68,7 +68,8 @@ synchronization = true;
 }else{
 	?>
 	<p>Bonus: login via your <a href="/auth/facebook<?php if (SERVER == 'dev'){ echo "-test";}?>">Facebook</a>, <a href="/auth/google">Google</a> or <a href="/auth/github">Github</a> account to keep these notes synced on all your browsers.</p>
-
+<p class="user-details">	<span id="sync-status-marker" class="sync-status"></span>
+</p>
 <?php
 }
 ?>
@@ -89,11 +90,13 @@ synchronization = true;
 					<h1>Memos</h1>
 	            </header>
 				<section class="post">
-					<ol id="editable" contenteditable="true" spellcheck="false">
+
+					<ol id="editable">
 						<li>Whatever you write here will be saved in your browser's local memory storage.</li>
-						<li>Keep this page opened in a tab  at all time; it's especially useful for reminders, to-do lists, anything you mind comes up with that has potential value.</li>
-						<li>Go ahead, replace this text with whatever you should not forget. <span class="pilcrow">|</span></li>
+						<li>Keep this page opened in a tab at all time; it's especially useful for reminders, to-do lists, anything you mind comes up with that has potential value.</li>
+						<li>Go ahead, replace this text with whatever you should not forget.</li>
 					</ol>
+					
 				</section>
 				<footer class="content-footer">
 					
@@ -103,7 +106,7 @@ synchronization = true;
     </div>
 </div>
 
-<script src="ui/js/min/dnfm-min.js?v=3"></script>
+<script src="ui/js/min/dnfm-min.js?v=18"></script>
 <?php
 if (SERVER ==='live'){
 ?>

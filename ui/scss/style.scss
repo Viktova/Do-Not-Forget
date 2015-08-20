@@ -170,73 +170,38 @@ h3 {
     }
 }    
 
-
-#editable * {
-	margin-bottom:1rem;
-	font-size:2rem;
-
-	
-}
-#editable { counter-reset: item; padding:0; }
-
-#editable li { display: block; color:#222; margin-bottom: 1rem}
-#editable li:before {
-	content: counter(item) ". ";
-	counter-increment: item;
-	color: #DDD;
-	padding-right:1rem;
-	display:inline-block;
-}
-
 [contenteditable]:hover, [contenteditable]:focus {
   background: #FFFFEE;
 }
-
-.pilcrow{
-	color: red;
-	font-weight: 100;
-	margin-left:.002em;
-	display:inline-block;
-	-webkit-animation: 1s blink step-end infinite;
-	-moz-animation: 1s blink step-end infinite;
-	-ms-animation: 1s blink step-end infinite;
-	-o-animation: 1s blink step-end infinite;
-	animation: 1s blink step-end infinite;
-}
-@keyframes "blink" {
-  from, to {
-    color: transparent;
-  }
-  50% {
-    color:$lighter-grey;
-  }
+#editable:hover, #editable:focus {
+  background: #FFFFEE;
+  border:1px dotted #FFFFEE;
+  outline: none;
 }
 
-@-moz-keyframes blink {
-  from, to {
-    color: transparent;
-  }
-  50% {
-    color:$lighter-grey;
-  }
-}
+#editable { 
+	counter-reset: item; 
+	padding:0; 
+	padding-left:2rem; 
+	border:1px solid white;
+	transition: all .5s ease-out;
+	* {
+		font-size:1.5rem;
+		line-height: 150%;	
+	}
 
-@-webkit-keyframes "blink" {
-  from, to {
-    color: transparent;
-  }
-  50% {
-    color:$lighter-grey;
-  }
-}
+	li { 
+		display: block; 
+		color:#222; 
+		margin-bottom: 1.5rem;
 
-@-o-keyframes "blink" {
-  from, to {
-    color: transparent;
-  }
-  50% {
-    color:$lighter-grey;
-  }
+		&:before {
+			content: counter(item) ". ";
+			counter-increment: item;
+			color: #DDD;
+			margin-left:-2rem;
+		}
+	}
 }
 
 .firstname{font-style: italic}
@@ -254,8 +219,6 @@ h3 {
 	}
 	img{
 		border-radius:50%;
-// 		position: absolute;
-// 		clip: rect(0px,75px,75px,0px);
 		width:75px;
 		height:75px;
 		margin:auto;

@@ -55,7 +55,7 @@ $f3->route('POST /update-memo',
 			die("non existing user.");
 		}
 		$user->memo = $memo;
-		$user->last_modified = date('Y-m-d h:i:s');
+		$user->last_modified = $f3->get('POST.last_modified');
 		$user->save();
 		$f3->set('SESSION.memo',   stripslashes($user->memo));
 		echo $user->last_modified;
