@@ -91,27 +91,3 @@ var addEvent = (function() {
 })();
 
 
-function update_remote_from_local() {
-	remoteLastModified = new Date(localStorage.remoteLastModified);
-	localLastModified = new Date(localStorage.localLastModified);
-	if (sync_mode && hasChanged && localLastModified.getTime() > remoteLastModified.getTime()) {
-		syncStatusMarker.innerHTML = 'Syncing...';
-		minAjax({
-			url: "/update-memo",
-			//request URL
-			type: "POST",
-			data: {
-				id: user.id,
-				email: user.email,
-				memo: appendLI(localStorage.getItem(localstorage_var_name))
-			},
-			success: function(remoteLastModified) {
-				localStorage.setItem('remoteLastModified', remoteLastModified);
-				remoteLastModifiedMarker.innerHTML = remoteLastModified;
-				user.remoteLastModified = remoteLastModified;
-				hasChanged = false;
-				syncStatusMarker.innerHTML = 'Saved online.';
-			}
-		});
-	}
-}

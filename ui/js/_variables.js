@@ -14,3 +14,4 @@ var debug = false;
 var hasChanged = false;
 var editable = $('editable');
 var localLastModifiedMarker = $('localLastModified');
+var localKeyUpTimer;
