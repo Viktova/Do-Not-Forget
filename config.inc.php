@@ -13,9 +13,9 @@ switch (SERVER){
 
 case 'dev':
 	define('WWWROOT', 'http://do-not-forget-me.dev');
-	define('DB_NAME', 'do-not-forget-me');
-	define('DB_USER', 'pixeline');
-	define('DB_PASSWORD', '5270L');
+	define('DB_NAME', 'xxx');
+	define('DB_USER', 'xxx');
+	define('DB_PASSWORD', 'xxx');
 	define('DB_HOST', 'localhost');
 	define('DEBUG', 3);
 	break;
@@ -23,9 +23,9 @@ case 'dev':
 
 default:
 	define('WWWROOT', 'http://do-not-forget.me');
-	define('DB_NAME', 'do-not-forget-me');
-	define('DB_USER', 'donotforgetme');
-	define('DB_PASSWORD', 'Q5p2HqJcjaDaLqep');
+	define('DB_NAME', 'xxx');
+	define('DB_USER', 'xxx');
+	define('DB_PASSWORD', 'xxx');
 	define('DB_HOST', 'localhost');
 	define('DEBUG', 1);
 
