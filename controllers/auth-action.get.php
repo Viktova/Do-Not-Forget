@@ -42,8 +42,8 @@ if($action !== 'callback'){
  */
 $response = null;
 switch($Opauth->env['callback_transport']) {
-	case 'session':
-	
+case 'session':
+
 	$response = $_SESSION['opauth'];
 	unset($_SESSION['opauth']);
 	break;
@@ -68,12 +68,12 @@ if (array_key_exists('error', $response)) {
 	echo '<pre>'.print_r($response, false).'</pre>';
 } else{
 
-/**
- * Auth response validation
- *
- * To validate that the auth response received is unaltered, especially auth response that
- * is sent through GET or POST.
- */
+	/**
+	 * Auth response validation
+	 *
+	 * To validate that the auth response received is unaltered, especially auth response that
+	 * is sent through GET or POST.
+	 */
 
 	if (empty($response['auth']) || empty($response['timestamp']) || empty($response['signature']) || empty($response['auth']['provider']) || empty($response['auth']['uid'])) {
 		echo '<strong style="color: red;">Invalid auth response: </strong>Missing key auth response components.'."<br>\n";
@@ -87,7 +87,7 @@ if (array_key_exists('error', $response)) {
 		 * It's all good. Go ahead with your application-specific authentication logic
 		 */
 
-/*
+		/*
 echo '<pre>';
 
 print_r($response);
@@ -104,16 +104,28 @@ exit;
 		if($user->dry()){
 			$user->role='subscriber';
 			$user->created= date('Y-m-d H:i:s');
+			// Send email to alex with the good news: a new user!
+			$smtp = new SMTP (  'smtp.gmail.com', 465, 'SSL', 'aplennevaux@gmail.com', 'iluvrocknroll' );
+
+			$smtp->set('From', '"Do Not Forget Server" <aplennevaux@gmail.com>');
+			$smtp->set('To', '<aplennevaux@gmail.com>');
+			$smtp->set('Subject', 'Yay!, New DNF User !! ');
+			$smtp->set('Errors-to', '<aplennevaux@gmail.com>');
+			$message = "On ". $user->created .", a new user subscribed to Do Not Forget";
+			$message .= "\nname: ".$response['auth']['info']['name'];
+			$message .= "\email: ".$response['auth']['info']['email'];
+			$sent = $smtp->send($message, TRUE);
+			$mylog = $smtp->log();
 		}
 		$user->email = $username;
 		if(!empty($response['auth']['info']['name'])){
-			$user->name = $response['auth']['info']['name'];		
+			$user->name = $response['auth']['info']['name'];
 		}
 		if(!empty($response['auth']['info']['first_name'])){
-			$user->first = $response['auth']['info']['first_name'];		
+			$user->first = $response['auth']['info']['first_name'];
 		}
 		if(!empty($response['auth']['info']['image'])){
-			$user->image = $response['auth']['info']['image'];		
+			$user->image = $response['auth']['info']['image'];
 		}
 		$user->save();
 		$f3->set('SESSION.name',  $user->name);
