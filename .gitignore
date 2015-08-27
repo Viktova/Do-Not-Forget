@@ -1,2 +1,6 @@
 config.inc.php
 config.inc.php
+
+*.scssc
+
+*.codekit
