@@ -1,0 +1,6 @@
+le lien
+<a href="http://google.com" rel="noreferrer" style="text-decoration:none;pointer-events:none;cursor:default;" target="_blank" class="kix-link"><span class="kix-wordhtmlgenerator-word-node" style="font-size:16px;font-family:'Times New Roman';color:#1155cc;background-color:transparent;font-weight:400;font-style:normal;font-variant:normal;text-decoration:underline;vertical-align:baseline;">http://google.com</span></a>
+
+popup
+
+<div class="docs-bubble" role="dialog" aria-label="Modifier ou supprimer un lien" tabindex="0" style="direction: ltr; left: 115px; top: 1435px;"><a target="_blank" rel="noreferrer" href="http://google.com">http://google.com</a><span> – <span class="docs-bubble-link" role="button" tabindex="0">Modifier</span> | <span class="docs-bubble-link" role="button" tabindex="0">Supprimer</span></span></div>
