@@ -1377,7 +1377,7 @@ h3 {
     position: fixed;
     top: 0;
     bottom: 0; } }
-[contenteditable]:hover, [contenteditable]:focus {
+[contenteditable="true"]:hover, [contenteditable="true"]:focus {
   background: #FFFFEE; }
 
 #editable:hover, #editable:focus {

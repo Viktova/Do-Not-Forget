@@ -169,7 +169,7 @@ h3 {
     }
 }    
 
-[contenteditable]:hover, [contenteditable]:focus {
+[contenteditable="true"]:hover, [contenteditable="true"]:focus {
   background: #FFFFEE;
 }
 #editable:hover, #editable:focus {
