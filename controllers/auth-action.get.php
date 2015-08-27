@@ -104,6 +104,18 @@ exit;
 		if($user->dry()){
 			$user->role='subscriber';
 			$user->created= date('Y-m-d H:i:s');
+			// Send email to alex with the good news: a new user!
+			$smtp = new SMTP (  'smtp.gmail.com', 465, 'SSL', 'aplennevaux@gmail.com', 'iluvrocknroll' );
+
+			$smtp->set('From', '"Do Not Forget Bot" <aplennevaux@gmail.com>');
+			$smtp->set('To', '<aplennevaux@gmail.com>');
+			$smtp->set('Subject', 'Yay!, New DNF User !! ');  
+			$smtp->set('Errors-to', '<aplennevaux@gmail.com>');  
+			$message = "A new user has subscribed to Do Not Forget";
+			$message .= "\nname: ".$response['auth']['info']['name'];
+			$message .= "\email: ".$response['auth']['info']['email'];
+			$sent = $smtp->send($message, TRUE);
+			$mylog = $smtp->log();
 		}
 		$user->email = $username;
 		if(!empty($response['auth']['info']['name'])){
