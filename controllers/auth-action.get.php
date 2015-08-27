@@ -83,17 +83,11 @@ if (array_key_exists('error', $response)) {
 		echo '<pre>'.print_r($response, false).'</pre>';
 
 	} else {
+
 		/**
 		 * It's all good. Go ahead with your application-specific authentication logic
 		 */
 
-		/*
-echo '<pre>';
-
-print_r($response);
-echo '</pre>';
-exit;
-//*/
 		$_SESSION['logged_in']= 'ok';
 
 		$username = $response['auth']['info']['email'];
@@ -102,22 +96,22 @@ exit;
 		$user = new DB\SQL\Mapper($db, 'memos');
 		$user->load(array('email = :username LIMIT 0,1', ':username'=>$username));
 		if($user->dry()){
+
 			$user->role='subscriber';
 			$user->created= date('Y-m-d H:i:s');
-			// Send email to alex with the good news: a new user!
-			$smtp = new SMTP (  'smtp.gmail.com', 465, 'SSL', 'aplennevaux@gmail.com', 'iluvrocknroll' );
-			$smtp->set('From', '"Do Not Forget Bot" <aplennevaux@gmail.com>');
-			$smtp->set('To', '<aplennevaux@gmail.com>');
-			$smtp->set('Subject', 'Yay!, New DNF User !! ');  
-			$smtp->set('Errors-to', '<aplennevaux@gmail.com>');  
-			$message = "A new user has subscribed to Do Not Forget";
-			$smtp->set('From', '"Do Not Forget Server" <aplennevaux@gmail.com>');
-			$smtp->set('To', '<aplennevaux@gmail.com>');
-			$smtp->set('Subject', 'Yay!, New DNF User !! ');
-			$smtp->set('Errors-to', '<aplennevaux@gmail.com>');
-			$message = "On ". $user->created .", a new user subscribed to Do Not Forget";
-			$message .= "\nname: ".$response['auth']['info']['name'];
-			$message .= "\email: ".$response['auth']['info']['email'];
+
+			// Send email to Admin with the good news: a new user!
+			$smtp = new SMTP (  SMTP_SERVER, SMTP_PORT, SMTP_PROTOCOL, SMTP_USERNAME, SMTP_PASSWORD );
+			$smtp->set('From', '"Do Not Forget Me" <'.ADMIN_EMAIL.'>');
+			$smtp->set('To', '<'.ADMIN_EMAIL.'>');
+			$smtp->set('Subject', 'Yay, New DNFM User : '.$response['auth']['info']['name']);
+			$smtp->set('Errors-to', '<'.ADMIN_EMAIL.'>');
+			
+			$message = "On ". date('Y-m-d at H:i') .", a new user subscribed to Do Not Forget Me!";
+			$message .= "\n\nname: ".$response['auth']['info']['name'];
+			$message .= "\nemail: ".$response['auth']['info']['email'];
+			$message .= "\n\n\nPop up the champaign!";
+			
 			$sent = $smtp->send($message, TRUE);
 			$mylog = $smtp->log();
 		}
@@ -131,6 +125,7 @@ exit;
 		if(!empty($response['auth']['info']['image'])){
 			$user->image = $response['auth']['info']['image'];
 		}
+
 		$user->save();
 		$f3->set('SESSION.name',  $user->name);
 		$f3->set('SESSION.id',  $user->id);
@@ -142,7 +137,6 @@ exit;
 		$f3->set('SESSION.created',  $user->created);
 		$f3->set('SESSION.last_modified',  $user->last_modified);
 		$f3->set('SESSION.logged_in', 'ok');
-
 
 		$f3->reroute('/');
 
