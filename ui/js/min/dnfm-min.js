@@ -10958,9 +10958,9 @@ medium = new Medium({
 });
 
 if (localStorage.getItem(localstorage_var_name)) {
-	medium.value(localStorage.getItem(localstorage_var_name));
+	medium.value(autolinker.link(localStorage.getItem(localstorage_var_name)));
 } else{
-	medium.value(editable.innerHTML);	
+	medium.value(autolinker.link(editable.innerHTML));	
 }
 
 
