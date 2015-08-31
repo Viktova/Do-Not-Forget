@@ -73,7 +73,7 @@ $f3->route('POST /fetch-memo', function($f3){
 		die("non existing user.");
 	}
 	$f3->set('SESSION.memo',  stripslashes($user->memo));
-	echo $user->memo;
+	echo stripslashes($user->memo);
 	exit;
 });
 

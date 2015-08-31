@@ -4,7 +4,7 @@ $light-blue: rgb(176, 202, 219);
 $dark-blue: #113D5E;
 
 
-body{font-family:sans-serif;}
+body{font-family:sans-serif; position:relative;}
 
 @import 'pure';
 
@@ -176,6 +176,7 @@ h3 {
   background: #FFFFEE;
   border:1px dotted #FFFFEE;
   outline: none;
+  position:relative;
 }
 
 #editable { 
@@ -184,6 +185,7 @@ h3 {
 	padding-left:2rem; 
 	border:1px solid white;
 	transition: all .5s ease-out;
+	position:relative;
 	* {
 		font-size:1.5rem;
 		line-height: 150%;	
@@ -193,7 +195,7 @@ h3 {
 		display: block; 
 		color:#222; 
 		margin-bottom: 1.5rem;
-
+		position:relative;
 		&:before {
 			content: counter(item) ". ";
 			counter-increment: item;
@@ -223,3 +225,6 @@ h3 {
 		margin:auto;
     }
 }
+#templates{display:none;}
+
+@import 'pixeline-tip';

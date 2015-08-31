@@ -9,18 +9,57 @@ var syncStatusMarker,
 	sync_mode,
 	timerInt,
 	localSaveTimer, 
-	parseHtmlTimer;
+	parseHtmlTimer,
+	autolinker,
+	urlTip,
+	caret_position,
+	editMode = true;
 	
 var sync_push_time = 5000; // milliseconds
 var sync_pull_time = 20; // seconds
 var localstorage_var_name = 'memotab';
 var debug = false;
 var hasChanged = false;
-var editable = $('editable');
-var localLastModifiedMarker = $('localLastModified');
 
-function $(id) {
-	return document.getElementById(id);
+function reset(){
+	localStorage[localstorage_var_name] = medium.value('hello');
+}
+function $(query) {
+	// jquery-like selector function.
+	// Based on http://jsperf.com/getelementbyid-vs-queryselector/11
+    var idSelectorRegexp = /^#[a-zA-Z]+[a-zA-Z0-9_\-]*$/;
+        // pure ID selector?
+      if (idSelectorRegexp.test(query)){
+        return document.getElementById(query.slice(1));
+	      
+      }
+      else {
+        return document.querySelector(query);	      
+      }
+}
+
+// useful to remove A anchors from html string
+// http://stackoverflow.com/questions/4536329/whats-the-best-way-to-strip-out-only-the-anchor-html-tags-in-javascript-given
+function unwrapAnchors() {
+    if(!('tagName' in this) || this.tagName.toLowerCase() !== 'a' || !('parentNode' in this)) {
+        return;
+    }
+    var childNodes = this.childNodes || [], children = [], child;
+    // Convert childNodes collection to array
+    for(var i = 0, childNodes = this.childNodes || []; i < childNodes.length; i++) {
+        children[i] = childNodes[i];
+    }
+    // Move children outside element
+    for(i = 0; i < children.length; i++) {
+        child = children[i];
+        if(('tagName' in child) && child.tagName.toLowerCase() === 'a') {
+            child.parentNode.removeChild(child);
+        } else {
+            this.parentNode.insertBefore(child, this);
+        }
+    }
+    // Remove now-empty anchor
+    this.parentNode.removeChild(this);
 }
 
 
@@ -69,9 +108,22 @@ function minAjax(e) {
 		else t.push(encodeURIComponent(p) + "=" + encodeURIComponent(c));
 	}
 	t = t.join("&"), "GET" === e.type && (o.open("GET", e.url + "?" + t, e.method), o.send(), 1 === e.debugLog && console.log("GET fired at:" + e.url + "?" + t)), "POST" === e.type && (o.open("POST", e.url, e.method), o.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), o.send(t), 1 === e.debugLog && console.log("POST fired at:" + e.url + " || Data:" + t));
-}
-// Html entity decoding
+};
 
+// Vanilla js equivalent to jquery on()
+function on(el, evt, sel, handler) {
+    el.addEventListener(evt, function(event) {
+        var t = event.target;
+        while (t && t !== this) {
+            if (t.matches(sel)) {
+                handler.call(t, event);
+            }
+            t = t.parentNode;
+        }
+    });
+}
+
+// Html entity decoding
 function decodeHtml(html) {
 	var txt = document.createElement("textarea");
 	txt.innerHTML = html;
@@ -112,7 +164,7 @@ var addEvent = (function() {
 })();
 
 
-// CONVERT URLS
+
 
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -2940,125 +2992,44 @@ return Autolinker;
 }));
 
 /*
- * Undo.js - A undo/redo framework for JavaScript
- * 
- * http://jzaefferer.github.com/undo
- *
- * Copyright (c) 2011 Jörn Zaefferer
- * MIT licensed.
- */
-(function() {
-
-// based on Backbone.js' inherits	
-var ctor = function(){};
-var inherits = function(parent, protoProps) {
-	var child;
-
-	if (protoProps && protoProps.hasOwnProperty('constructor')) {
-		child = protoProps.constructor;
-	} else {
-		child = function(){ return parent.apply(this, arguments); };
-	}
-
-	ctor.prototype = parent.prototype;
-	child.prototype = new ctor();
+	TOOLTIP object
 	
-	if (protoProps) extend(child.prototype, protoProps);
+	1 init: inject html for the popup
 	
-	child.prototype.constructor = child;
-	child.__super__ = parent.prototype;
-	return child;
-};
+*/
 
-function extend(target, ref) {
-	var name, value;
-	for ( name in ref ) {
-		value = ref[name];
-		if (value !== undefined) {
-			target[ name ] = value;
+function Tip() {};
+
+Tip.prototype ={
+	constructor: Tip,
+	init: function(){
+		var popup_node = document.getElementById("url-popup").cloneNode(true);
+		this.popup = document.body.appendChild(popup_node);
+		this.popup.style.position = 'absolute';
+	},
+	
+	show: function(target){
+		var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+		var scrollX = window.pageXOffset || document.documentElement.scrollLeft || 0;
+		var targetRect = target.getBoundingClientRect();
+		var targetWidth = targetRect.width || (targetRect.left - targetRect.right);
+		this.popup.style.display = 'block';
+		var left = (targetWidth / 2 + targetRect.left + scrollX - this.popup.clientWidth / 2);
+		if (left < 10) {
+			left = 10;
 		}
+		this.popup.style.left = left + 'px';
+		this.popup.style.top = (targetRect.top + scrollY - this.popup.clientHeight - 5) + 'px';
+	},
+	content: function(html){
+		this.popup.innerHTML = html;
+	},
+	hide: function(){
+		this.popup.style.display='none';
 	}
-	return target;
 };
 
-var Undo;
-if (typeof exports !== 'undefined') {
-	Undo = exports;
-} else {
-	Undo = this.Undo = {};
-}
 
-Undo.Stack = function() {
-	this.commands = [];
-	this.stackPosition = -1;
-	this.savePosition = -1;
-};
-
-extend(Undo.Stack.prototype, {
-	execute: function(command) {
-		this._clearRedo();
-		command.execute();
-		this.commands.push(command);
-		this.stackPosition++;
-		this.changed();
-	},
-	undo: function() {
-		this.commands[this.stackPosition].undo();
-		this.stackPosition--;
-		this.changed();
-	},
-	canUndo: function() {
-		return this.stackPosition >= 0;
-	},
-	redo: function() {
-		this.stackPosition++;
-		this.commands[this.stackPosition].redo();
-		this.changed();
-	},
-	canRedo: function() {
-		return this.stackPosition < this.commands.length - 1;
-	},
-	save: function() {
-		this.savePosition = this.stackPosition;
-		this.changed();
-	},
-	dirty: function() {
-		return this.stackPosition != this.savePosition;
-	},
-	_clearRedo: function() {
-		// TODO there's probably a more efficient way for this
-		this.commands = this.commands.slice(0, this.stackPosition + 1);
-	},
-	changed: function() {
-		// do nothing, override
-	}
-});
-
-Undo.Command = function(name) {
-	this.name = name;
-}
-
-var up = new Error("override me!");
-
-extend(Undo.Command.prototype, {
-	execute: function() {
-		throw up;
-	},
-	undo: function() {
-		throw up;
-	},
-	redo: function() {
-		this.execute();
-	}
-});
-
-Undo.Command.extend = function(protoProps) {
-	var child = inherits(this, protoProps);
-	child.extend = Undo.Command.extend;
-	return child;
-};
-	
-}).call(this);
 
 /**
  * Rangy, a cross-browser JavaScript range and selection library
@@ -3066,8 +3037,8 @@ Undo.Command.extend = function(protoProps) {
  *
  * Copyright 2015, Tim Down
  * Licensed under the MIT license.
- * Version: 1.3.0-alpha.20150122
- * Build date: 22 January 2015
+ * Version: 1.3.1-dev
+ * Build date: 20 May 2015
  */
 
 (function(factory, root) {
@@ -3144,6 +3115,16 @@ Undo.Command.extend = function(protoProps) {
         return isHostObject(doc, "body") ? doc.body : doc.getElementsByTagName("body")[0];
     }
 
+    var forEach = [].forEach ?
+        function(arr, func) {
+            arr.forEach(func);
+        } :
+        function(arr, func) {
+            for (var i = 0, len = arr.length; i < len; ++i) {
+                func(arr[i], i);
+            }
+        };
+
     var modules = {};
 
     var isBrowser = (typeof window != UNDEFINED && typeof document != UNDEFINED);
@@ -3156,11 +3137,12 @@ Undo.Command.extend = function(protoProps) {
         areHostObjects: areHostObjects,
         areHostProperties: areHostProperties,
         isTextRange: isTextRange,
-        getBody: getBody
+        getBody: getBody,
+        forEach: forEach
     };
 
     var api = {
-        version: "1.3.0-alpha.20150122",
+        version: "1.3.1-dev",
         initialized: false,
         isBrowser: isBrowser,
         supported: true,
@@ -3168,7 +3150,7 @@ Undo.Command.extend = function(protoProps) {
         features: {},
         modules: modules,
         config: {
-            alertOnFail: true,
+            alertOnFail: false,
             alertOnWarn: false,
             preferTextRange: false,
             autoInitialize: (typeof rangyAutoInitialize == UNDEFINED) ? true : rangyAutoInitialize
@@ -3236,7 +3218,7 @@ Undo.Command.extend = function(protoProps) {
     } else {
         fail("hasOwnProperty not supported");
     }
-    
+
     // Test whether we're in a browser and bail out if not
     if (!isBrowser) {
         fail("Rangy can only run in a browser");
@@ -3357,6 +3339,24 @@ Undo.Command.extend = function(protoProps) {
         }
     }
 
+    function deprecationNotice(deprecated, replacement, module) {
+        if (module) {
+            deprecated += " in module " + module.name;
+        }
+        api.warn("DEPRECATED: " + deprecated + " is deprecated. Please use " +
+        replacement + " instead.");
+    }
+
+    function createAliasForDeprecatedMethod(owner, deprecated, replacement, module) {
+        owner[deprecated] = function() {
+            deprecationNotice(deprecated, replacement, module);
+            return owner[replacement].apply(owner, util.toArray(arguments));
+        };
+    }
+
+    util.deprecationNotice = deprecationNotice;
+    util.createAliasForDeprecatedMethod = createAliasForDeprecatedMethod;
+
     // Allow external scripts to initialize this library in case it's loaded after the document has loaded
     api.init = init;
 
@@ -3387,6 +3387,7 @@ Undo.Command.extend = function(protoProps) {
 
     if (isBrowser) {
         api.shim = api.createMissingNativeApi = shim;
+        createAliasForDeprecatedMethod(api, "createMissingNativeApi", "shim");
     }
 
     function Module(name, dependencies, initializer) {
@@ -3414,15 +3415,15 @@ Undo.Command.extend = function(protoProps) {
                     throw new Error("required module '" + moduleName + "' not supported");
                 }
             }
-            
+
             // Now run initializer
             this.initializer(this);
         },
-        
+
         fail: function(reason) {
             this.initialized = true;
             this.supported = false;
-            throw new Error("Module '" + this.name + "' failed to load: " + reason);
+            throw new Error(reason);
         },
 
         warn: function(msg) {
@@ -3430,7 +3431,7 @@ Undo.Command.extend = function(protoProps) {
         },
 
         deprecationNotice: function(deprecated, replacement) {
-            api.warn("DEPRECATED: " + deprecated + " in module " + this.name + "is deprecated. Please use " +
+            api.warn("DEPRECATED: " + deprecated + " in module " + this.name + " is deprecated. Please use " +
                 replacement + " instead");
         },
 
@@ -3438,7 +3439,7 @@ Undo.Command.extend = function(protoProps) {
             return new Error("Error in Rangy " + this.name + " module: " + msg);
         }
     };
-    
+
     function createModule(name, dependencies, initFunc) {
         var newModule = new Module(name, dependencies, function(module) {
             if (!module.initialized) {
@@ -3499,6 +3500,7 @@ Undo.Command.extend = function(protoProps) {
     api.createCoreModule("DomUtil", [], function(api, module) {
         var UNDEF = "undefined";
         var util = api.util;
+        var getBody = util.getBody;
 
         // Perform feature tests
         if (!util.areHostMethods(document, ["createDocumentFragment", "createElement", "createTextNode"])) {
@@ -3850,10 +3852,33 @@ Undo.Command.extend = function(protoProps) {
             };
         } else if (typeof document.documentElement.currentStyle != UNDEF) {
             getComputedStyleProperty = function(el, propName) {
-                return el.currentStyle[propName];
+                return el.currentStyle ? el.currentStyle[propName] : "";
             };
         } else {
             module.fail("No means of obtaining computed style properties found");
+        }
+
+        function createTestElement(doc, html, contentEditable) {
+            var body = getBody(doc);
+            var el = doc.createElement("div");
+            el.contentEditable = "" + !!contentEditable;
+            if (html) {
+                el.innerHTML = html;
+            }
+
+            // Insert the test element at the start of the body to prevent scrolling to the bottom in iOS (issue #292)
+            var bodyFirstChild = body.firstChild;
+            if (bodyFirstChild) {
+                body.insertBefore(el, bodyFirstChild);
+            } else {
+                body.appendChild(el);
+            }
+
+            return el;
+        }
+
+        function removeNode(node) {
+            return node.parentNode.removeChild(node);
         }
 
         function NodeIterator(root) {
@@ -3953,7 +3978,7 @@ Undo.Command.extend = function(protoProps) {
             getWindow: getWindow,
             getIframeWindow: getIframeWindow,
             getIframeDocument: getIframeDocument,
-            getBody: util.getBody,
+            getBody: getBody,
             isWindow: isWindow,
             getContentDocument: getContentDocument,
             getRootContainer: getRootContainer,
@@ -3961,6 +3986,8 @@ Undo.Command.extend = function(protoProps) {
             isBrokenNode: isBrokenNode,
             inspectNode: inspectNode,
             getComputedStyleProperty: getComputedStyleProperty,
+            createTestElement: createTestElement,
+            removeNode: removeNode,
             fragmentFromNodeChildren: fragmentFromNodeChildren,
             createIterator: createIterator,
             DomPosition: DomPosition
@@ -3990,6 +4017,8 @@ Undo.Command.extend = function(protoProps) {
         var getRootContainer = dom.getRootContainer;
         var crashyTextNodes = api.features.crashyTextNodes;
 
+        var removeNode = dom.removeNode;
+
         /*----------------------------------------------------------------------------------------------------------------*/
 
         // Utility functions
@@ -4001,6 +4030,10 @@ Undo.Command.extend = function(protoProps) {
 
         function getRangeDocument(range) {
             return range.document || getDocument(range.startContainer);
+        }
+
+        function getRangeRoot(range) {
+            return getRootContainer(range.startContainer);
         }
 
         function getBoundaryBeforeNode(node) {
@@ -4237,7 +4270,7 @@ Undo.Command.extend = function(protoProps) {
                     }
                 } else {
                     if (current.parentNode) {
-                        current.parentNode.removeChild(current);
+                        removeNode(current);
                     } else {
                     }
                 }
@@ -4340,26 +4373,21 @@ Undo.Command.extend = function(protoProps) {
             }
         }
 
-        function isOrphan(node) {
-            return (crashyTextNodes && dom.isBrokenNode(node)) ||
-                !arrayContains(rootContainerNodeTypes, node.nodeType) && !getDocumentOrFragmentContainer(node, true);
-        }
-
         function isValidOffset(node, offset) {
             return offset <= (isCharacterDataNode(node) ? node.length : node.childNodes.length);
         }
 
         function isRangeValid(range) {
             return (!!range.startContainer && !!range.endContainer &&
-                    !isOrphan(range.startContainer) &&
-                    !isOrphan(range.endContainer) &&
+                    !(crashyTextNodes && (dom.isBrokenNode(range.startContainer) || dom.isBrokenNode(range.endContainer))) &&
+                    getRootContainer(range.startContainer) == getRootContainer(range.endContainer) &&
                     isValidOffset(range.startContainer, range.startOffset) &&
                     isValidOffset(range.endContainer, range.endOffset));
         }
 
         function assertRangeValid(range) {
             if (!isRangeValid(range)) {
-                throw new Error("Range error: Range is no longer valid after DOM mutation (" + range.inspect() + ")");
+                throw new Error("Range error: Range is not valid. This usually happens after DOM mutation. Range: (" + range.inspect() + ")");
             }
         }
 
@@ -4470,7 +4498,7 @@ Undo.Command.extend = function(protoProps) {
             }
             range.setStartAndEnd(sc, so, ec, eo);
         }
-        
+
         function rangeToHtml(range) {
             assertRangeValid(range);
             var container = range.commonAncestorContainer.parentNode.cloneNode(false);
@@ -4653,13 +4681,14 @@ Undo.Command.extend = function(protoProps) {
             // with it (as in WebKit) or not (as in Gecko pre-1.9, and the default)
             intersectsNode: function(node, touchingIsIntersecting) {
                 assertRangeValid(this);
-                assertNode(node, "NOT_FOUND_ERR");
-                if (getDocument(node) !== getRangeDocument(this)) {
+                if (getRootContainer(node) != getRangeRoot(this)) {
                     return false;
                 }
 
                 var parent = node.parentNode, offset = getNodeIndex(node);
-                assertNode(parent, "NOT_FOUND_ERR");
+                if (!parent) {
+                    return true;
+                }
 
                 var startComparison = comparePoints(parent, offset, this.endContainer, this.endOffset),
                     endComparison = comparePoints(parent, offset + 1, this.startContainer, this.startOffset);
@@ -4769,7 +4798,7 @@ Undo.Command.extend = function(protoProps) {
                 this.setStartAfter(node);
                 this.collapse(true);
             },
-            
+
             getBookmark: function(containerNode) {
                 var doc = getRangeDocument(this);
                 var preSelectionRange = api.createRange(doc);
@@ -4789,7 +4818,7 @@ Undo.Command.extend = function(protoProps) {
                     containerNode: containerNode
                 };
             },
-            
+
             moveToBookmark: function(bookmark) {
                 var containerNode = bookmark.containerNode;
                 var charIndex = 0;
@@ -4831,11 +4860,11 @@ Undo.Command.extend = function(protoProps) {
             isValid: function() {
                 return isRangeValid(this);
             },
-            
+
             inspect: function() {
                 return inspect(this);
             },
-            
+
             detach: function() {
                 // In DOM4, detach() is now a no-op.
             }
@@ -4972,7 +5001,7 @@ Undo.Command.extend = function(protoProps) {
 
                     boundaryUpdater(this, sc, so, ec, eo);
                 },
-                
+
                 setBoundary: function(node, offset, isStart) {
                     this["set" + (isStart ? "Start" : "End")](node, offset);
                 },
@@ -5042,7 +5071,7 @@ Undo.Command.extend = function(protoProps) {
                             ec = node;
                             eo = node.length;
                             node.appendData(sibling.data);
-                            sibling.parentNode.removeChild(sibling);
+                            removeNode(sibling);
                         }
                     };
 
@@ -5053,7 +5082,7 @@ Undo.Command.extend = function(protoProps) {
                             var nodeLength = node.length;
                             so = sibling.length;
                             node.insertData(0, sibling.data);
-                            sibling.parentNode.removeChild(sibling);
+                            removeNode(sibling);
                             if (sc == ec) {
                                 eo += so;
                                 ec = sc;
@@ -5070,10 +5099,22 @@ Undo.Command.extend = function(protoProps) {
                     };
 
                     var normalizeStart = true;
+                    var sibling;
 
                     if (isCharacterDataNode(ec)) {
-                        if (ec.length == eo) {
+                        if (eo == ec.length) {
                             mergeForward(ec);
+                        } else if (eo == 0) {
+                            sibling = ec.previousSibling;
+                            if (sibling && sibling.nodeType == ec.nodeType) {
+                                eo = sibling.length;
+                                if (sc == ec) {
+                                    normalizeStart = false;
+                                }
+                                sibling.appendData(ec.data);
+                                removeNode(ec);
+                                ec = sibling;
+                            }
                         }
                     } else {
                         if (eo > 0) {
@@ -5089,6 +5130,16 @@ Undo.Command.extend = function(protoProps) {
                         if (isCharacterDataNode(sc)) {
                             if (so == 0) {
                                 mergeBackward(sc);
+                            } else if (so == sc.length) {
+                                sibling = sc.nextSibling;
+                                if (sibling && sibling.nodeType == sc.nodeType) {
+                                    if (ec == sibling) {
+                                        ec = sc;
+                                        eo += sc.length;
+                                    }
+                                    sc.appendData(sibling.data);
+                                    removeNode(sibling);
+                                }
                             }
                         } else {
                             if (so < sc.childNodes.length) {
@@ -5167,7 +5218,7 @@ Undo.Command.extend = function(protoProps) {
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    // Wrappers for the browser's native DOM Range and/or TextRange implementation 
+    // Wrappers for the browser's native DOM Range and/or TextRange implementation
     api.createCoreModule("WrappedRange", ["DomRange"], function(api, module) {
         var WrappedRange, WrappedTextRange;
         var dom = api.dom;
@@ -5433,7 +5484,7 @@ Undo.Command.extend = function(protoProps) {
                 };
             })();
         }
-        
+
         if (api.features.implementsTextRange) {
             /*
             This is a workaround for a bug where IE returns the wrong container element from the TextRange's parentElement()
@@ -5500,7 +5551,7 @@ Undo.Command.extend = function(protoProps) {
                 // Workaround for HTML5 Shiv's insane violation of document.createElement(). See Rangy issue 104 and HTML5
                 // Shiv issue 64: https://github.com/aFarkas/html5shiv/issues/64
                 if (workingNode.parentNode) {
-                    workingNode.parentNode.removeChild(workingNode);
+                    dom.removeNode(workingNode);
                 }
 
                 var comparison, workingComparisonType = isStart ? "StartToStart" : "StartToEnd";
@@ -5555,11 +5606,11 @@ Undo.Command.extend = function(protoProps) {
                         For the particular case of a boundary within a text node containing rendered line breaks (within a
                         <pre> element, for example), we need a slightly complicated approach to get the boundary's offset in
                         IE. The facts:
-                        
+
                         - Each line break is represented as \r in the text node's data/nodeValue properties
                         - Each line break is represented as \r\n in the TextRange's 'text' property
                         - The 'text' property of the TextRange does not contain trailing line breaks
-                        
+
                         To get round the problem presented by the final fact above, we can use the fact that TextRange's
                         moveStart() and moveEnd() methods return the actual number of characters moved, which is not
                         necessarily the same as the number of characters it was instructed to move. The simplest approach is
@@ -5568,13 +5619,13 @@ Undo.Command.extend = function(protoProps) {
                         "move-negative-gazillion" method). However, this is extremely slow when the document is large and
                         the range is near the end of it. Clearly doing the mirror image (i.e. moving the range boundaries to
                         the end of the document) has the same problem.
-                        
+
                         Another approach that works is to use moveStart() to move the start boundary of the range up to the
                         end boundary one character at a time and incrementing a counter with the value returned by the
                         moveStart() call. However, the check for whether the start boundary has reached the end boundary is
                         expensive, so this method is slow (although unlike "move-negative-gazillion" is largely unaffected
                         by the location of the range within the document).
-                        
+
                         The approach used below is a hybrid of the two methods above. It uses the fact that a string
                         containing the TextRange's 'text' property with each \r\n converted to a single \r character cannot
                         be longer than the text of the TextRange, so the start of the range is moved that length initially
@@ -5609,7 +5660,7 @@ Undo.Command.extend = function(protoProps) {
                 }
 
                 // Clean up
-                workingNode.parentNode.removeChild(workingNode);
+                dom.removeNode(workingNode);
 
                 return {
                     boundaryPosition: boundaryPosition,
@@ -5758,15 +5809,8 @@ Undo.Command.extend = function(protoProps) {
             return new DomRange(doc);
         };
 
-        api.createIframeRange = function(iframeEl) {
-            module.deprecationNotice("createIframeRange()", "createRange(iframeEl)");
-            return api.createRange(iframeEl);
-        };
-
-        api.createIframeRangyRange = function(iframeEl) {
-            module.deprecationNotice("createIframeRangyRange()", "createRangyRange(iframeEl)");
-            return api.createRangyRange(iframeEl);
-        };
+        util.createAliasForDeprecatedMethod(api, "createIframeRange", "createRange");
+        util.createAliasForDeprecatedMethod(api, "createIframeRangyRange", "createRangyRange");
 
         api.addShimListener(function(win) {
             var doc = win.document;
@@ -5804,8 +5848,8 @@ Undo.Command.extend = function(protoProps) {
         var rangesEqual = DomRange.rangesEqual;
 
 
-        // Utility function to support direction parameters in the API that may be a string ("backward" or "forward") or a
-        // Boolean (true for backwards).
+        // Utility function to support direction parameters in the API that may be a string ("backward", "backwards",
+        // "forward" or "forwards") or a Boolean (true for backwards).
         function isDirectionBackward(dir) {
             return (typeof dir == "string") ? /^backward(s)?$/i.test(dir) : !!dir;
         }
@@ -5830,7 +5874,7 @@ Undo.Command.extend = function(protoProps) {
         function getDocSelection(winParam) {
             return getWindow(winParam, "getDocSelection").document.selection;
         }
-        
+
         function winSelectionIsBackward(sel) {
             var backward = false;
             if (sel.anchorNode) {
@@ -5864,11 +5908,19 @@ Undo.Command.extend = function(protoProps) {
             };
         } else {
             module.fail("Neither document.selection or window.getSelection() detected.");
+            return false;
         }
 
         api.getNativeSelection = getNativeSelection;
 
         var testSelection = getNativeSelection();
+
+        // In Firefox, the selection is null in an iframe with display: none. See issue #138.
+        if (!testSelection) {
+            module.fail("Native selection was null (possibly issue 138?)");
+            return false;
+        }
+
         var testRange = api.createNativeRange(document);
         var body = getBody(document);
 
@@ -5881,7 +5933,7 @@ Undo.Command.extend = function(protoProps) {
         // Test for existence of native selection extend() method
         var selectionHasExtend = isHostMethod(testSelection, "extend");
         features.selectionHasExtend = selectionHasExtend;
-        
+
         // Test if rangeCount exists
         var selectionHasRangeCount = (typeof testSelection.rangeCount == NUMBER);
         features.selectionHasRangeCount = selectionHasRangeCount;
@@ -5905,25 +5957,22 @@ Undo.Command.extend = function(protoProps) {
                 // Previously an iframe was used but this caused problems in some circumstances in IE, so tests are
                 // performed on the current document's selection. See issue 109.
 
-                // Note also that if a selection previously existed, it is wiped by these tests. This should usually be fine
-                // because initialization usually happens when the document loads, but could be a problem for a script that
-                // loads and initializes Rangy later. If anyone complains, code could be added to save and restore the
-                // selection.
+                // Note also that if a selection previously existed, it is wiped and later restored by these tests. This
+                // will result in the selection direction begin reversed if the original selection was backwards and the
+                // browser does not support setting backwards selections (Internet Explorer, I'm looking at you).
                 var sel = window.getSelection();
                 if (sel) {
                     // Store the current selection
                     var originalSelectionRangeCount = sel.rangeCount;
                     var selectionHasMultipleRanges = (originalSelectionRangeCount > 1);
                     var originalSelectionRanges = [];
-                    var originalSelectionBackward = winSelectionIsBackward(sel); 
+                    var originalSelectionBackward = winSelectionIsBackward(sel);
                     for (var i = 0; i < originalSelectionRangeCount; ++i) {
                         originalSelectionRanges[i] = sel.getRangeAt(i);
                     }
-                    
+
                     // Create some test elements
-                    var body = getBody(document);
-                    var testEl = body.appendChild( document.createElement("div") );
-                    testEl.contentEditable = "false";
+                    var testEl = dom.createTestElement(document, "", false);
                     var textNode = testEl.appendChild( document.createTextNode("\u00a0\u00a0\u00a0") );
 
                     // Test whether the native selection will allow a collapsed selection within a non-editable element
@@ -5931,6 +5980,7 @@ Undo.Command.extend = function(protoProps) {
 
                     r1.setStart(textNode, 1);
                     r1.collapse(true);
+                    sel.removeAllRanges();
                     sel.addRange(r1);
                     collapsedNonEditableSelectionsSupported = (sel.rangeCount == 1);
                     sel.removeAllRanges();
@@ -5957,7 +6007,7 @@ Undo.Command.extend = function(protoProps) {
                     }
 
                     // Clean up
-                    body.removeChild(testEl);
+                    dom.removeNode(testEl);
                     sel.removeAllRanges();
 
                     for (i = 0; i < originalSelectionRangeCount; ++i) {
@@ -6215,10 +6265,7 @@ Undo.Command.extend = function(protoProps) {
 
         api.getSelection = getSelection;
 
-        api.getIframeSelection = function(iframeEl) {
-            module.deprecationNotice("getIframeSelection()", "getSelection(iframeEl)");
-            return api.getSelection(dom.getIframeWindow(iframeEl));
-        };
+        util.createAliasForDeprecatedMethod(api, "getIframeSelection", "getSelection");
 
         var selProto = WrappedSelection.prototype;
 
@@ -6579,8 +6626,8 @@ Undo.Command.extend = function(protoProps) {
             }
         };
 
-        // The spec is very specific on how selectAllChildren should be implemented so the native implementation is
-        // never used by Rangy.
+        // The spec is very specific on how selectAllChildren should be implemented and not all browsers implement it as
+        // specified so the native implementation is never used by Rangy.
         selProto.selectAllChildren = function(node) {
             assertNodeInSameDocument(this, node);
             var range = api.createRange(node);
@@ -6596,7 +6643,7 @@ Undo.Command.extend = function(protoProps) {
                 while (controlRange.length) {
                     element = controlRange.item(0);
                     controlRange.remove(element);
-                    element.parentNode.removeChild(element);
+                    dom.removeNode(element);
                 }
                 this.refresh();
             } else if (this.rangeCount) {
@@ -6638,11 +6685,11 @@ Undo.Command.extend = function(protoProps) {
         selProto.callMethodOnEachRange = function(methodName, params) {
             var results = [];
             this.eachRange( function(range) {
-                results.push( range[methodName].apply(range, params) );
+                results.push( range[methodName].apply(range, params || []) );
             } );
             return results;
         };
-        
+
         function createStartOrEndSetter(isStart) {
             return function(node, offset) {
                 var range;
@@ -6659,7 +6706,7 @@ Undo.Command.extend = function(protoProps) {
 
         selProto.setStart = createStartOrEndSetter(true);
         selProto.setEnd = createStartOrEndSetter(false);
-        
+
         // Add select() method to Range prototype. Any existing selection will be removed.
         api.rangePrototype.select = function(direction) {
             getSelection( this.getDocument() ).setSingleRange(this, direction);
@@ -6709,6 +6756,20 @@ Undo.Command.extend = function(protoProps) {
             }
         };
 
+        selProto.saveRanges = function() {
+            return {
+                backward: this.isBackward(),
+                ranges: this.callMethodOnEachRange("cloneRange")
+            };
+        };
+
+        selProto.restoreRanges = function(selRanges) {
+            this.removeAllRanges();
+            for (var i = 0, range; range = selRanges.ranges[i]; ++i) {
+                this.addRange(range, (selRanges.backward && i == 0));
+            }
+        };
+
         selProto.toHtml = function() {
             var rangeHtmls = [];
             this.eachRange(function(range) {
@@ -6725,7 +6786,7 @@ Undo.Command.extend = function(protoProps) {
                     if (isTextRange(range)) {
                         return range;
                     } else {
-                        throw module.createError("getNativeTextRange: selection is a control selection"); 
+                        throw module.createError("getNativeTextRange: selection is a control selection");
                     }
                 } else if (this.rangeCount > 0) {
                     return api.WrappedTextRange.rangeToTextRange( this.getRangeAt(0) );
@@ -6827,8 +6888,8 @@ Undo.Command.extend = function(protoProps) {
  *
  * Copyright 2015, Tim Down
  * Licensed under the MIT license.
- * Version: 1.3.0-alpha.20150122
- * Build date: 22 January 2015
+ * Version: 1.3.1-dev
+ * Build date: 20 May 2015
  */
 (function(factory, root) {
     if (typeof define == "function" && define.amd) {
@@ -6846,10 +6907,12 @@ Undo.Command.extend = function(protoProps) {
         var dom = api.dom;
         var DomPosition = dom.DomPosition;
         var contains = dom.arrayContains;
-        var isHtmlNamespace = dom.isHtmlNamespace;
+        var util = api.util;
+        var forEach = util.forEach;
 
 
         var defaultTagName = "span";
+        var createElementNSSupported = util.isHostMethod(document, "createElementNS");
 
         function each(obj, func) {
             for (var i in obj) {
@@ -6866,45 +6929,66 @@ Undo.Command.extend = function(protoProps) {
             return str.replace(/^\s\s*/, "").replace(/\s\s*$/, "");
         }
 
-        var hasClass, addClass, removeClass;
-        if (api.util.isHostObject(document.createElement("div"), "classList")) {
-            hasClass = function(el, className) {
+        function classNameContainsClass(fullClassName, className) {
+            return !!fullClassName && new RegExp("(?:^|\\s)" + className + "(?:\\s|$)").test(fullClassName);
+        }
+
+        // Inefficient, inelegant nonsense for IE's svg element, which has no classList and non-HTML className implementation
+        function hasClass(el, className) {
+            if (typeof el.classList == "object") {
                 return el.classList.contains(className);
-            };
+            } else {
+                var classNameSupported = (typeof el.className == "string");
+                var elClass = classNameSupported ? el.className : el.getAttribute("class");
+                return classNameContainsClass(elClass, className);
+            }
+        }
 
-            addClass = function(el, className) {
-                return el.classList.add(className);
-            };
-
-            removeClass = function(el, className) {
-                return el.classList.remove(className);
-            };
-        } else {
-            hasClass = function(el, className) {
-                return el.className && new RegExp("(?:^|\\s)" + className + "(?:\\s|$)").test(el.className);
-            };
-
-            addClass = function(el, className) {
-                if (el.className) {
-                    if (!hasClass(el, className)) {
-                        el.className += " " + className;
+        function addClass(el, className) {
+            if (typeof el.classList == "object") {
+                el.classList.add(className);
+            } else {
+                var classNameSupported = (typeof el.className == "string");
+                var elClass = classNameSupported ? el.className : el.getAttribute("class");
+                if (elClass) {
+                    if (!classNameContainsClass(elClass, className)) {
+                        elClass += " " + className;
                     }
                 } else {
-                    el.className = className;
+                    elClass = className;
+                }
+                if (classNameSupported) {
+                    el.className = elClass;
+                } else {
+                    el.setAttribute("class", elClass);
+                }
+            }
+        }
+
+        var removeClass = (function() {
+            function replacer(matched, whiteSpaceBefore, whiteSpaceAfter) {
+                return (whiteSpaceBefore && whiteSpaceAfter) ? " " : "";
+            }
+
+            return function(el, className) {
+                if (typeof el.classList == "object") {
+                    el.classList.remove(className);
+                } else {
+                    var classNameSupported = (typeof el.className == "string");
+                    var elClass = classNameSupported ? el.className : el.getAttribute("class");
+                    elClass = elClass.replace(new RegExp("(^|\\s)" + className + "(\\s|$)"), replacer);
+                    if (classNameSupported) {
+                        el.className = elClass;
+                    } else {
+                        el.setAttribute("class", elClass);
+                    }
                 }
             };
+        })();
 
-            removeClass = (function() {
-                function replacer(matched, whiteSpaceBefore, whiteSpaceAfter) {
-                    return (whiteSpaceBefore && whiteSpaceAfter) ? " " : "";
-                }
-
-                return function(el, className) {
-                    if (el.className) {
-                        el.className = el.className.replace(new RegExp("(^|\\s)" + className + "(\\s|$)"), replacer);
-                    }
-                };
-            })();
+        function getClass(el) {
+            var classNameSupported = (typeof el.className == "string");
+            return classNameSupported ? el.className : el.getAttribute("class");
         }
 
         function sortClassName(className) {
@@ -6912,11 +6996,26 @@ Undo.Command.extend = function(protoProps) {
         }
 
         function getSortedClassName(el) {
-            return sortClassName(el.className);
+            return sortClassName( getClass(el) );
         }
 
         function haveSameClasses(el1, el2) {
             return getSortedClassName(el1) == getSortedClassName(el2);
+        }
+
+        function hasAllClasses(el, className) {
+            var classes = className.split(/\s+/);
+            for (var i = 0, len = classes.length; i < len; ++i) {
+                if (!hasClass(el, trim(classes[i]))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function canTextBeStyled(textNode) {
+            var parent = textNode.parentNode;
+            return (parent && parent.nodeType == 1 && !/^(textarea|style|script|select|iframe)$/i.test(parent.nodeName));
         }
 
         function movePosition(position, oldParent, oldIndex, newParent, newIndex) {
@@ -6955,9 +7054,9 @@ Undo.Command.extend = function(protoProps) {
             var oldParent = node.parentNode;
             var oldIndex = dom.getNodeIndex(node);
 
-            for (var i = 0, position; position = positionsToPreserve[i++]; ) {
+            forEach(positionsToPreserve, function(position) {
                 movePosition(position, oldParent, oldIndex, newParent, newIndex);
-            }
+            });
 
             // Now actually move the node.
             if (newParent.childNodes.length == newIndex) {
@@ -6972,11 +7071,11 @@ Undo.Command.extend = function(protoProps) {
             var oldParent = node.parentNode;
             var oldIndex = dom.getNodeIndex(node);
 
-            for (var i = 0, position; position = positionsToPreserve[i++]; ) {
+            forEach(positionsToPreserve, function(position) {
                 movePositionWhenRemovingNode(position, oldParent, oldIndex);
-            }
+            });
 
-            node.parentNode.removeChild(node);
+            dom.removeNode(node);
         }
 
         function moveChildrenPreservingPositions(node, newParent, newIndex, removeNode, positionsToPreserve) {
@@ -7246,16 +7345,15 @@ Undo.Command.extend = function(protoProps) {
                 if (textNodes.length > 1) {
                     var firstTextNodeIndex = dom.getNodeIndex(firstTextNode);
                     var textParts = [], combinedTextLength = 0, textNode, parent;
-                    for (var i = 0, len = textNodes.length, j, position; i < len; ++i) {
-                        textNode = textNodes[i];
+                    forEach(textNodes, function(textNode, i) {
                         parent = textNode.parentNode;
                         if (i > 0) {
                             parent.removeChild(textNode);
                             if (!parent.hasChildNodes()) {
-                                parent.parentNode.removeChild(parent);
+                                dom.removeNode(parent);
                             }
                             if (positionsToPreserve) {
-                                for (j = 0; position = positionsToPreserve[j++]; ) {
+                                forEach(positionsToPreserve, function(position) {
                                     // Handle case where position is inside the text node being merged into a preceding node
                                     if (position.node == textNode) {
                                         position.node = firstTextNode;
@@ -7269,12 +7367,12 @@ Undo.Command.extend = function(protoProps) {
                                             position.offset = combinedTextLength;
                                         }
                                     }
-                                }
+                                });
                             }
                         }
                         textParts[i] = textNode.data;
                         combinedTextLength += textNode.data.length;
-                    }
+                    });
                     firstTextNode.data = textParts.join("");
                 }
                 return firstTextNode.data;
@@ -7290,9 +7388,9 @@ Undo.Command.extend = function(protoProps) {
 
             toString: function() {
                 var textParts = [];
-                for (var i = 0, len = this.textNodes.length; i < len; ++i) {
-                    textParts[i] = "'" + this.textNodes[i].data + "'";
-                }
+                forEach(this.textNodes, function(textNode, i) {
+                    textParts[i] = "'" + textNode.data + "'";
+                });
                 return "[Merge(" + textParts.join(",") + ")]";
             }
         };
@@ -7335,8 +7433,10 @@ Undo.Command.extend = function(protoProps) {
             applier.attrExceptions = [];
             var el = document.createElement(applier.elementTagName);
             applier.elementProperties = applier.copyPropertiesToElement(elementPropertiesFromOptions, el, true);
-            each(elementAttributes, function(attrName) {
+            each(elementAttributes, function(attrName, attrValue) {
                 applier.attrExceptions.push(attrName);
+                // Ensure each attribute value is a string
+                elementAttributes[attrName] = "" + attrValue;
             });
             applier.elementAttributes = elementAttributes;
 
@@ -7384,8 +7484,8 @@ Undo.Command.extend = function(protoProps) {
                         propValue = props[p];
                         elPropValue = el[p];
 
-                        // Special case for class. The copied properties object has the applier's CSS class as well as its
-                        // own to simplify checks when removing styling elements
+                        // Special case for class. The copied properties object has the applier's class as well as its own
+                        // to simplify checks when removing styling elements
                         if (p == "className") {
                             addClass(el, propValue);
                             addClass(el, this.className);
@@ -7432,15 +7532,26 @@ Undo.Command.extend = function(protoProps) {
 
             copyAttributesToElement: function(attrs, el) {
                 for (var attrName in attrs) {
-                    if (attrs.hasOwnProperty(attrName)) {
+                    if (attrs.hasOwnProperty(attrName) && !/^class(?:Name)?$/i.test(attrName)) {
                         el.setAttribute(attrName, attrs[attrName]);
                     }
                 }
             },
 
+            appliesToElement: function(el) {
+                return contains(this.tagNames, el.tagName.toLowerCase());
+            },
+
+            getEmptyElements: function(range) {
+                var applier = this;
+                return range.getNodes([1], function(el) {
+                    return applier.appliesToElement(el) && !el.hasChildNodes();
+                });
+            },
+
             hasClass: function(node) {
                 return node.nodeType == 1 &&
-                    (this.applyToAnyTagName || contains(this.tagNames, node.tagName.toLowerCase())) &&
+                    (this.applyToAnyTagName || this.appliesToElement(node)) &&
                     hasClass(node, this.className);
             },
 
@@ -7463,7 +7574,7 @@ Undo.Command.extend = function(protoProps) {
                 return this.ignoreWhiteSpace && node && node.nodeType == 3 && isUnrenderedWhiteSpaceNode(node);
             },
 
-            // Normalizes nodes after applying a CSS class to a Range.
+            // Normalizes nodes after applying a class to a Range.
             postApply: function(textNodes, range, positionsToPreserve, isUndo) {
                 var firstNode = textNodes[0], lastNode = textNodes[textNodes.length - 1];
 
@@ -7475,8 +7586,7 @@ Undo.Command.extend = function(protoProps) {
                 var textNode, precedingTextNode;
 
                 // Check for every required merge and create a Merge object for each
-                for (var i = 0, len = textNodes.length; i < len; ++i) {
-                    textNode = textNodes[i];
+                forEach(textNodes, function(textNode) {
                     precedingTextNode = getPreviousMergeableTextNode(textNode, !isUndo);
                     if (precedingTextNode) {
                         if (!currentMerge) {
@@ -7495,7 +7605,7 @@ Undo.Command.extend = function(protoProps) {
                     } else {
                         currentMerge = null;
                     }
-                }
+                });
 
                 // Test whether the first node after the range needs merging
                 var nextTextNode = getNextMergeableTextNode(lastNode, !isUndo);
@@ -7519,8 +7629,13 @@ Undo.Command.extend = function(protoProps) {
                 }
             },
 
-            createContainer: function(doc) {
-                var el = doc.createElement(this.elementTagName);
+            createContainer: function(parentNode) {
+                var doc = dom.getDocument(parentNode);
+                var namespace;
+                var el = createElementNSSupported && !dom.isHtmlNamespace(parentNode) && (namespace = parentNode.namespaceURI) ?
+                    doc.createElementNS(parentNode.namespaceURI, this.elementTagName) :
+                    doc.createElement(this.elementTagName);
+
                 this.copyPropertiesToElement(this.elementProperties, el, false);
                 this.copyAttributesToElement(this.elementAttributes, el);
                 addClass(el, this.className);
@@ -7534,7 +7649,11 @@ Undo.Command.extend = function(protoProps) {
                 var applier = this;
                 return each(props, function(p, propValue) {
                     if (p == "className") {
-                        return sortClassName(el.className) == applier.elementSortedClassName;
+                        // For checking whether we should reuse an existing element, we just want to check that the element
+                        // has all the classes specified in the className property. When deciding whether the element is
+                        // removable when unapplying a class, there is separate special handling to check whether the
+                        // element has extra classes so the same simple check will do.
+                        return hasAllClasses(el, propValue);
                     } else if (typeof propValue == "object") {
                         if (!applier.elementHasProperties(el[p], propValue)) {
                             return false;
@@ -7545,28 +7664,43 @@ Undo.Command.extend = function(protoProps) {
                 });
             },
 
-            applyToTextNode: function(textNode, positionsToPreserve) {
-                var parent = textNode.parentNode;
-                if (parent.childNodes.length == 1 &&
-                        this.useExistingElements &&
-                        isHtmlNamespace(parent) &&
-                        contains(this.tagNames, parent.tagName.toLowerCase()) &&
-                        this.elementHasProperties(parent, this.elementProperties)) {
+            elementHasAttributes: function(el, attrs) {
+                return each(attrs, function(name, value) {
+                    if (el.getAttribute(name) !== value) {
+                        return false;
+                    }
+                });
+            },
 
-                    addClass(parent, this.className);
-                } else {
-                    var el = this.createContainer(dom.getDocument(textNode));
-                    textNode.parentNode.insertBefore(el, textNode);
-                    el.appendChild(textNode);
+            applyToTextNode: function(textNode, positionsToPreserve) {
+
+                // Check whether the text node can be styled. Text within a <style> or <script> element, for example,
+                // should not be styled. See issue 283.
+                if (canTextBeStyled(textNode)) {
+                    var parent = textNode.parentNode;
+                    if (parent.childNodes.length == 1 &&
+                        this.useExistingElements &&
+                        this.appliesToElement(parent) &&
+                        this.elementHasProperties(parent, this.elementProperties) &&
+                        this.elementHasAttributes(parent, this.elementAttributes)) {
+
+                        addClass(parent, this.className);
+                    } else {
+                        var textNodeParent = textNode.parentNode;
+                        var el = this.createContainer(textNodeParent);
+                        textNodeParent.insertBefore(el, textNode);
+                        el.appendChild(textNode);
+                    }
                 }
+
             },
 
             isRemovable: function(el) {
-                return isHtmlNamespace(el) &&
-                    el.tagName.toLowerCase() == this.elementTagName &&
+                return el.tagName.toLowerCase() == this.elementTagName &&
                     getSortedClassName(el) == this.elementSortedClassName &&
                     this.elementHasProperties(el, this.elementProperties) &&
                     !elementHasNonClassAttributes(el, this.attrExceptions) &&
+                    this.elementHasAttributes(el, this.elementAttributes) &&
                     this.isModifiable(el);
             },
 
@@ -7586,9 +7720,9 @@ Undo.Command.extend = function(protoProps) {
                 var rangesToPreserve = [range];
                 var positionsToPreserve = getRangeBoundaries(rangesToPreserve);
 
-                for (var i = 0, node; node = nodesToRemove[i++]; ) {
+                forEach(nodesToRemove, function(node) {
                     removePreservingPositions(node, positionsToPreserve);
-                }
+                });
 
                 // Update the range from the preserved boundary positions
                 updateRangesFromBoundaries(rangesToPreserve, positionsToPreserve);
@@ -7596,7 +7730,7 @@ Undo.Command.extend = function(protoProps) {
 
             undoToTextNode: function(textNode, range, ancestorWithClass, positionsToPreserve) {
                 if (!range.containsNode(ancestorWithClass)) {
-                    // Split out the portion of the ancestor from which we can remove the CSS class
+                    // Split out the portion of the ancestor from which we can remove the class
                     //var parent = ancestorWithClass.parentNode, index = dom.getNodeIndex(ancestorWithClass);
                     var ancestorRange = range.cloneRange();
                     ancestorRange.selectNode(ancestorWithClass);
@@ -7632,6 +7766,7 @@ Undo.Command.extend = function(protoProps) {
             },
 
             applyToRange: function(range, rangesToPreserve) {
+                var applier = this;
                 rangesToPreserve = rangesToPreserve || [];
 
                 // Create an array of range boundaries to preserve
@@ -7640,28 +7775,35 @@ Undo.Command.extend = function(protoProps) {
                 range.splitBoundariesPreservingPositions(positionsToPreserve);
 
                 // Tidy up the DOM by removing empty containers
-                if (this.removeEmptyElements) {
-                    this.removeEmptyContainers(range);
+                if (applier.removeEmptyElements) {
+                    applier.removeEmptyContainers(range);
                 }
 
                 var textNodes = getEffectiveTextNodes(range);
 
                 if (textNodes.length) {
-                    for (var i = 0, textNode; textNode = textNodes[i++]; ) {
-                        if (!this.isIgnorableWhiteSpaceNode(textNode) && !this.getSelfOrAncestorWithClass(textNode) &&
-                                this.isModifiable(textNode)) {
-                            this.applyToTextNode(textNode, positionsToPreserve);
+                    forEach(textNodes, function(textNode) {
+                        if (!applier.isIgnorableWhiteSpaceNode(textNode) && !applier.getSelfOrAncestorWithClass(textNode) &&
+                                applier.isModifiable(textNode)) {
+                            applier.applyToTextNode(textNode, positionsToPreserve);
                         }
-                    }
-                    textNode = textNodes[textNodes.length - 1];
-                    range.setStartAndEnd(textNodes[0], 0, textNode, textNode.length);
-                    if (this.normalize) {
-                        this.postApply(textNodes, range, positionsToPreserve, false);
+                    });
+                    var lastTextNode = textNodes[textNodes.length - 1];
+                    range.setStartAndEnd(textNodes[0], 0, lastTextNode, lastTextNode.length);
+                    if (applier.normalize) {
+                        applier.postApply(textNodes, range, positionsToPreserve, false);
                     }
 
                     // Update the ranges from the preserved boundary positions
                     updateRangesFromBoundaries(rangesToPreserve, positionsToPreserve);
                 }
+
+                // Apply classes to any appropriate empty elements
+                var emptyElements = applier.getEmptyElements(range);
+
+                forEach(emptyElements, function(el) {
+                    addClass(el, applier.className);
+                });
             },
 
             applyToRanges: function(ranges) {
@@ -7681,6 +7823,7 @@ Undo.Command.extend = function(protoProps) {
             },
 
             undoToRange: function(range, rangesToPreserve) {
+                var applier = this;
                 // Create an array of range boundaries to preserve
                 rangesToPreserve = rangesToPreserve || [];
                 var positionsToPreserve = getRangeBoundaries(rangesToPreserve);
@@ -7689,8 +7832,8 @@ Undo.Command.extend = function(protoProps) {
                 range.splitBoundariesPreservingPositions(positionsToPreserve);
 
                 // Tidy up the DOM by removing empty containers
-                if (this.removeEmptyElements) {
-                    this.removeEmptyContainers(range, positionsToPreserve);
+                if (applier.removeEmptyElements) {
+                    applier.removeEmptyContainers(range, positionsToPreserve);
                 }
 
                 var textNodes = getEffectiveTextNodes(range);
@@ -7698,26 +7841,33 @@ Undo.Command.extend = function(protoProps) {
                 var lastTextNode = textNodes[textNodes.length - 1];
 
                 if (textNodes.length) {
-                    this.splitAncestorWithClass(range.endContainer, range.endOffset, positionsToPreserve);
-                    this.splitAncestorWithClass(range.startContainer, range.startOffset, positionsToPreserve);
+                    applier.splitAncestorWithClass(range.endContainer, range.endOffset, positionsToPreserve);
+                    applier.splitAncestorWithClass(range.startContainer, range.startOffset, positionsToPreserve);
                     for (var i = 0, len = textNodes.length; i < len; ++i) {
                         textNode = textNodes[i];
-                        ancestorWithClass = this.getSelfOrAncestorWithClass(textNode);
-                        if (ancestorWithClass && this.isModifiable(textNode)) {
-                            this.undoToAncestor(ancestorWithClass, positionsToPreserve);
+                        ancestorWithClass = applier.getSelfOrAncestorWithClass(textNode);
+                        if (ancestorWithClass && applier.isModifiable(textNode)) {
+                            applier.undoToAncestor(ancestorWithClass, positionsToPreserve);
                         }
                     }
                     // Ensure the range is still valid
                     range.setStartAndEnd(textNodes[0], 0, lastTextNode, lastTextNode.length);
 
 
-                    if (this.normalize) {
-                        this.postApply(textNodes, range, positionsToPreserve, true);
+                    if (applier.normalize) {
+                        applier.postApply(textNodes, range, positionsToPreserve, true);
                     }
 
                     // Update the ranges from the preserved boundary positions
                     updateRangesFromBoundaries(rangesToPreserve, positionsToPreserve);
                 }
+
+                // Remove class from any appropriate empty elements
+                var emptyElements = applier.getEmptyElements(range);
+
+                forEach(emptyElements, function(el) {
+                    removeClass(el, applier.className);
+                });
             },
 
             undoToRanges: function(ranges) {
@@ -7737,19 +7887,6 @@ Undo.Command.extend = function(protoProps) {
                 this.undoToRanges(ranges);
                 sel.setRanges(ranges);
             },
-
-    /*
-            getTextSelectedByRange: function(textNode, range) {
-                var textRange = range.cloneRange();
-                textRange.selectNodeContents(textNode);
-
-                var intersectionRange = textRange.intersection(range);
-                var text = intersectionRange ? intersectionRange.toString() : "";
-                textRange.detach();
-
-                return text;
-            },
-    */
 
             isAppliedToRange: function(range) {
                 if (range.collapsed || range.toString() == "") {
@@ -7793,16 +7930,6 @@ Undo.Command.extend = function(protoProps) {
                 }
             },
 
-    /*
-            toggleRanges: function(ranges) {
-                if (this.isAppliedToRanges(ranges)) {
-                    this.undoToRanges(ranges);
-                } else {
-                    this.applyToRanges(ranges);
-                }
-            },
-    */
-
             toggleSelection: function(win) {
                 if (this.isAppliedToSelection(win)) {
                     this.undoToSelection(win);
@@ -7823,23 +7950,6 @@ Undo.Command.extend = function(protoProps) {
                 return elements;
             },
 
-    /*
-            getElementsWithClassIntersectingSelection: function(win) {
-                var sel = api.getSelection(win);
-                var elements = [];
-                var applier = this;
-                sel.eachRange(function(range) {
-                    var rangeElements = applier.getElementsWithClassIntersectingRange(range);
-                    for (var i = 0, el; el = rangeElements[i++]; ) {
-                        if (!contains(elements, el)) {
-                            elements.push(el);
-                        }
-                    }
-                });
-                return elements;
-            },
-    */
-
             detach: function() {}
         };
 
@@ -7851,7 +7961,9 @@ Undo.Command.extend = function(protoProps) {
             hasClass: hasClass,
             addClass: addClass,
             removeClass: removeClass,
+            getClass: getClass,
             hasSameClasses: haveSameClasses,
+            hasAllClasses: hasAllClasses,
             replaceWithOwnChildren: replaceWithOwnChildrenPreservingPositions,
             elementsHaveSameNonClassAttributes: elementsHaveSameNonClassAttributes,
             elementHasNonClassAttributes: elementHasNonClassAttributes,
@@ -7862,11 +7974,382 @@ Undo.Command.extend = function(protoProps) {
         };
 
         api.CssClassApplier = api.ClassApplier = ClassApplier;
-        api.createCssClassApplier = api.createClassApplier = createClassApplier;
+        api.createClassApplier = createClassApplier;
+        util.createAliasForDeprecatedMethod(api, "createCssClassApplier", "createClassApplier", module);
     });
     
+    return rangy;
 }, this);
 
+/**
+ * Selection save and restore module for Rangy.
+ * Saves and restores user selections using marker invisible elements in the DOM.
+ *
+ * Part of Rangy, a cross-browser JavaScript range and selection library
+ * https://github.com/timdown/rangy
+ *
+ * Depends on Rangy core.
+ *
+ * Copyright 2015, Tim Down
+ * Licensed under the MIT license.
+ * Version: 1.3.1-dev
+ * Build date: 20 May 2015
+ */
+(function(factory, root) {
+    if (typeof define == "function" && define.amd) {
+        // AMD. Register as an anonymous module with a dependency on Rangy.
+        define(["./rangy-core"], factory);
+    } else if (typeof module != "undefined" && typeof exports == "object") {
+        // Node/CommonJS style
+        module.exports = factory( require("rangy") );
+    } else {
+        // No AMD or CommonJS support so we use the rangy property of root (probably the global variable)
+        factory(root.rangy);
+    }
+})(function(rangy) {
+    rangy.createModule("SaveRestore", ["WrappedRange"], function(api, module) {
+        var dom = api.dom;
+        var removeNode = dom.removeNode;
+        var isDirectionBackward = api.Selection.isDirectionBackward;
+        var markerTextChar = "\ufeff";
+
+        function gEBI(id, doc) {
+            return (doc || document).getElementById(id);
+        }
+
+        function insertRangeBoundaryMarker(range, atStart) {
+            var markerId = "selectionBoundary_" + (+new Date()) + "_" + ("" + Math.random()).slice(2);
+            var markerEl;
+            var doc = dom.getDocument(range.startContainer);
+
+            // Clone the Range and collapse to the appropriate boundary point
+            var boundaryRange = range.cloneRange();
+            boundaryRange.collapse(atStart);
+
+            // Create the marker element containing a single invisible character using DOM methods and insert it
+            markerEl = doc.createElement("span");
+            markerEl.id = markerId;
+            markerEl.style.lineHeight = "0";
+            markerEl.style.display = "none";
+            markerEl.className = "rangySelectionBoundary";
+            markerEl.appendChild(doc.createTextNode(markerTextChar));
+
+            boundaryRange.insertNode(markerEl);
+            return markerEl;
+        }
+
+        function setRangeBoundary(doc, range, markerId, atStart) {
+            var markerEl = gEBI(markerId, doc);
+            if (markerEl) {
+                range[atStart ? "setStartBefore" : "setEndBefore"](markerEl);
+                removeNode(markerEl);
+            } else {
+                module.warn("Marker element has been removed. Cannot restore selection.");
+            }
+        }
+
+        function compareRanges(r1, r2) {
+            return r2.compareBoundaryPoints(r1.START_TO_START, r1);
+        }
+
+        function saveRange(range, direction) {
+            var startEl, endEl, doc = api.DomRange.getRangeDocument(range), text = range.toString();
+            var backward = isDirectionBackward(direction);
+
+            if (range.collapsed) {
+                endEl = insertRangeBoundaryMarker(range, false);
+                return {
+                    document: doc,
+                    markerId: endEl.id,
+                    collapsed: true
+                };
+            } else {
+                endEl = insertRangeBoundaryMarker(range, false);
+                startEl = insertRangeBoundaryMarker(range, true);
+
+                return {
+                    document: doc,
+                    startMarkerId: startEl.id,
+                    endMarkerId: endEl.id,
+                    collapsed: false,
+                    backward: backward,
+                    toString: function() {
+                        return "original text: '" + text + "', new text: '" + range.toString() + "'";
+                    }
+                };
+            }
+        }
+
+        function restoreRange(rangeInfo, normalize) {
+            var doc = rangeInfo.document;
+            if (typeof normalize == "undefined") {
+                normalize = true;
+            }
+            var range = api.createRange(doc);
+            if (rangeInfo.collapsed) {
+                var markerEl = gEBI(rangeInfo.markerId, doc);
+                if (markerEl) {
+                    markerEl.style.display = "inline";
+                    var previousNode = markerEl.previousSibling;
+
+                    // Workaround for issue 17
+                    if (previousNode && previousNode.nodeType == 3) {
+                        removeNode(markerEl);
+                        range.collapseToPoint(previousNode, previousNode.length);
+                    } else {
+                        range.collapseBefore(markerEl);
+                        removeNode(markerEl);
+                    }
+                } else {
+                    module.warn("Marker element has been removed. Cannot restore selection.");
+                }
+            } else {
+                setRangeBoundary(doc, range, rangeInfo.startMarkerId, true);
+                setRangeBoundary(doc, range, rangeInfo.endMarkerId, false);
+            }
+
+            if (normalize) {
+                range.normalizeBoundaries();
+            }
+
+            return range;
+        }
+
+        function saveRanges(ranges, direction) {
+            var rangeInfos = [], range, doc;
+            var backward = isDirectionBackward(direction);
+
+            // Order the ranges by position within the DOM, latest first, cloning the array to leave the original untouched
+            ranges = ranges.slice(0);
+            ranges.sort(compareRanges);
+
+            for (var i = 0, len = ranges.length; i < len; ++i) {
+                rangeInfos[i] = saveRange(ranges[i], backward);
+            }
+
+            // Now that all the markers are in place and DOM manipulation over, adjust each range's boundaries to lie
+            // between its markers
+            for (i = len - 1; i >= 0; --i) {
+                range = ranges[i];
+                doc = api.DomRange.getRangeDocument(range);
+                if (range.collapsed) {
+                    range.collapseAfter(gEBI(rangeInfos[i].markerId, doc));
+                } else {
+                    range.setEndBefore(gEBI(rangeInfos[i].endMarkerId, doc));
+                    range.setStartAfter(gEBI(rangeInfos[i].startMarkerId, doc));
+                }
+            }
+
+            return rangeInfos;
+        }
+
+        function saveSelection(win) {
+            if (!api.isSelectionValid(win)) {
+                module.warn("Cannot save selection. This usually happens when the selection is collapsed and the selection document has lost focus.");
+                return null;
+            }
+            var sel = api.getSelection(win);
+            var ranges = sel.getAllRanges();
+            var backward = (ranges.length == 1 && sel.isBackward());
+
+            var rangeInfos = saveRanges(ranges, backward);
+
+            // Ensure current selection is unaffected
+            if (backward) {
+                sel.setSingleRange(ranges[0], backward);
+            } else {
+                sel.setRanges(ranges);
+            }
+
+            return {
+                win: win,
+                rangeInfos: rangeInfos,
+                restored: false
+            };
+        }
+
+        function restoreRanges(rangeInfos) {
+            var ranges = [];
+
+            // Ranges are in reverse order of appearance in the DOM. We want to restore earliest first to avoid
+            // normalization affecting previously restored ranges.
+            var rangeCount = rangeInfos.length;
+
+            for (var i = rangeCount - 1; i >= 0; i--) {
+                ranges[i] = restoreRange(rangeInfos[i], true);
+            }
+
+            return ranges;
+        }
+
+        function restoreSelection(savedSelection, preserveDirection) {
+            if (!savedSelection.restored) {
+                var rangeInfos = savedSelection.rangeInfos;
+                var sel = api.getSelection(savedSelection.win);
+                var ranges = restoreRanges(rangeInfos), rangeCount = rangeInfos.length;
+
+                if (rangeCount == 1 && preserveDirection && api.features.selectionHasExtend && rangeInfos[0].backward) {
+                    sel.removeAllRanges();
+                    sel.addRange(ranges[0], true);
+                } else {
+                    sel.setRanges(ranges);
+                }
+
+                savedSelection.restored = true;
+            }
+        }
+
+        function removeMarkerElement(doc, markerId) {
+            var markerEl = gEBI(markerId, doc);
+            if (markerEl) {
+                removeNode(markerEl);
+            }
+        }
+
+        function removeMarkers(savedSelection) {
+            var rangeInfos = savedSelection.rangeInfos;
+            for (var i = 0, len = rangeInfos.length, rangeInfo; i < len; ++i) {
+                rangeInfo = rangeInfos[i];
+                if (rangeInfo.collapsed) {
+                    removeMarkerElement(savedSelection.doc, rangeInfo.markerId);
+                } else {
+                    removeMarkerElement(savedSelection.doc, rangeInfo.startMarkerId);
+                    removeMarkerElement(savedSelection.doc, rangeInfo.endMarkerId);
+                }
+            }
+        }
+
+        api.util.extend(api, {
+            saveRange: saveRange,
+            restoreRange: restoreRange,
+            saveRanges: saveRanges,
+            restoreRanges: restoreRanges,
+            saveSelection: saveSelection,
+            restoreSelection: restoreSelection,
+            removeMarkerElement: removeMarkerElement,
+            removeMarkers: removeMarkers
+        });
+    });
+    
+    return rangy;
+}, this);
+
+/*
+ * Undo.js - A undo/redo framework for JavaScript
+ *
+ * http://jzaefferer.github.com/undo
+ *
+ * Copyright (c) 2011 Jörn Zaefferer
+ *
+ * MIT licensed.
+ */
+(function() {
+	// based on Backbone.js' inherits	
+	var ctor = function() {};
+	var inherits = function(parent, protoProps) {
+			var child;
+			if (protoProps && protoProps.hasOwnProperty('constructor')) {
+				child = protoProps.constructor;
+			} else {
+				child = function() {
+					return parent.apply(this, arguments);
+				};
+			}
+			ctor.prototype = parent.prototype;
+			child.prototype = new ctor();
+			if (protoProps) extend(child.prototype, protoProps);
+			child.prototype.constructor = child;
+			child.__super__ = parent.prototype;
+			return child;
+		};
+
+	function extend(target, ref) {
+		var name, value;
+		for (name in ref) {
+			value = ref[name];
+			if (value !== undefined) {
+				target[name] = value;
+			}
+		}
+		return target;
+	};
+	var Undo = {
+		version: '0.1.15'
+	};
+	Undo.Stack = function() {
+		this.commands = [];
+		this.stackPosition = -1;
+		this.savePosition = -1;
+	};
+	extend(Undo.Stack.prototype, {
+		execute: function(command) {
+			this._clearRedo();
+			command.execute();
+			this.commands.push(command);
+			this.stackPosition++;
+			this.changed();
+		},
+		undo: function() {
+			this.commands[this.stackPosition].undo();
+			this.stackPosition--;
+			this.changed();
+		},
+		canUndo: function() {
+			return this.stackPosition >= 0;
+		},
+		redo: function() {
+			this.stackPosition++;
+			this.commands[this.stackPosition].redo();
+			this.changed();
+		},
+		canRedo: function() {
+			return this.stackPosition < this.commands.length - 1;
+		},
+		save: function() {
+			this.savePosition = this.stackPosition;
+			this.changed();
+		},
+		dirty: function() {
+			return this.stackPosition != this.savePosition;
+		},
+		_clearRedo: function() {
+			// TODO there's probably a more efficient way for this
+			this.commands = this.commands.slice(0, this.stackPosition + 1);
+		},
+		changed: function() {
+			// do nothing, override
+		}
+	});
+	Undo.Command = function(name) {
+		this.name = name;
+	}
+	var up = new Error("override me!");
+	extend(Undo.Command.prototype, {
+		execute: function() {
+			throw up;
+		},
+		undo: function() {
+			throw up;
+		},
+		redo: function() {
+			this.execute();
+		}
+	});
+	Undo.Command.extend = function(protoProps) {
+		var child = inherits(this, protoProps);
+		child.extend = Undo.Command.extend;
+		return child;
+	};
+	// AMD support
+	if (typeof define === "function" && define.amd) {
+		// Define as an anonymous module
+		define(Undo);
+	} else if (typeof module != "undefined" && module.exports) {
+		module.exports = Undo
+	} else {
+		this.Undo = Undo;
+	}
+}).call(this);
 
 /*
  * Medium.js - Taking control of content editable
@@ -10431,7 +10914,7 @@ rangy.rangePrototype.insertNodeAtEnd = function (node) {
 }).call(this, window, document);
 
 
-// @codekit-prepend "_variables.js", "_functions.js", "_medium.js";
+// @codekit-prepend "_variables.js", "_functions.js","_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
 /*
 	DO NOT FORGET ME
 	
@@ -10440,10 +10923,10 @@ rangy.rangePrototype.insertNodeAtEnd = function (node) {
 
 remove_facebook_token_in_url();
 
+editable = document.getElementById('editable');
+localLastModifiedMarker = $('#localLastModified');
+autolinker = new Autolinker( { truncate: 25, className: "dnfm-editable-link" } );
 
-var autolinker = new Autolinker( { truncate: 25, className: "dnfm-editable-link" } );
-
-editable = $('editable');
 
 // Medium.js: Thanks and loving accolades to its creators
 // http://jakiestfu.github.io/Medium.js/docs/
@@ -10463,7 +10946,7 @@ medium = new Medium({
 		'innerLevel': ['li', 'b', 'span','u', 'i', 'strong', 'a']
 	},
 	attributes: {
-		//remove: ['style', 'class']
+		remove: ['style']
 	},
 	beforeInvokeElement: function () {
 		// before bolding/italicing...
@@ -10473,29 +10956,111 @@ medium = new Medium({
 
 	}
 });
-medium.invokeElement('a', {
-  href: "http://www.github.com/"
-});
-medium.value(editable.innerHTML);
-if (debug) {
-	$('debugger').style.display = 'block';
+
+if (localStorage.getItem(localstorage_var_name)) {
+	medium.value(localStorage.getItem(localstorage_var_name));
+} else{
+	medium.value(editable.innerHTML);	
 }
 
 
-// Synchronisation logic
+if (debug) {
+	$('#debugger').style.display = 'block';
+}
+
+addEvent(document.body, 'keydown',function(e){
+	// TOGGLE EDIT MODE VIA CTRL KEY
+	if (e.keyCode === 17 || e.which === 17) {
+		// when ctrl is released
+		editMode = !Boolean(editMode);
+		console.log("contenteditable is: "+ editMode);
+		editable.contentEditable =  editMode;
+	}
+});
+
+addEvent(editable, 'keyup', function(e) {
+	window.clearTimeout(localSaveTimer);
+	window.clearTimeout(parseHtmlTimer);
+
+	var d = new Date();
+	
+	localStorage.setItem(localstorage_var_name, this.innerHTML);
+	localStorage.setItem('localLastModified', d.toISOString().substring(0, 19).replace('T', ' ') );
+	hasChanged = true;
+	
+	localSaveTimer = setTimeout(
+		function(){ 
+			syncStatusMarker.innerHTML = 'Saved locally.';
+			setTimeout(function(){ syncStatusMarker.innerHTML = '';}, 3000);
+		}, 3000);
+	
+	if (sync_mode) {
+		user.update_local_from_remote(sync_pull_time);
+	}
+	
+	// Detect urls, etc.
+	parseHtmlTimer = setTimeout(function(){
+
+		// save caret position
+		caret_position = window.rangy.saveSelection();
+		console.log("caret position set to "+ window.caret_position);
+		
+		// remove previous anchored version of the content
+		var a = editable.getElementsByTagName('a');
+		while(a.length) {
+			unwrapAnchors.call(a[a.length - 1]);
+		};
+
+		// convert urls to anchors
+		medium.value( autolinker.link( editable.innerHTML ));
+
+		// restore caret position
+		window.rangy.restoreSelection(window.caret_position);
+	}, 2000);
+});
+
+// SHOW URL POPUP
+on( document,'click', '#dnfm', function(e){
+	// Close popup on "click outside"
+	urlTip.hide();
+});
+
+urlTip = new Tip(); 
+urlTip.init();
+
+on(document, 'click', '.dnfm-editable-link', function(e){	
+	// show the popup
+	var link = this.getAttribute('href');
+	urlTip.content('<a href="'+ link +'" target="_blank">'+ link +'</a>');
+	urlTip.show(e.target);
+});
+
+addEvent(editable, 'keydown', function(e) {
+	urlTip.hide();
+	syncStatusMarker.innerHTML = '';
+});
+
+
+// RESET BUTTON
+addEvent($('#clear'), 'click', function() {
+	medium.value('');
+	localStorage.setItem(localstorage_var_name, '');
+
+	editable.focus();
+});
+
+// SYNCHRONISATION LOGIC
 sync_mode = window.synchronization || false;
 
-syncStatusMarker = $('sync-status-marker');
+syncStatusMarker = $('#sync-status-marker');
 
 if (sync_mode) {
 	
-	localstorage_var_name = 'memotab';
-	
 	user = {};
-	user.id = $('user_id').value;
-	user.email = $('user_email').value;
-	user.memo = decodeHtml($('user_memo').value);
-	user.remoteLastModified = $('user_last_modified').value;
+	user.id = $('#user_id').value;
+	user.email = $('#user_email').value;
+	user.memo = decodeHtml($('#user_memo').value);
+	user.remoteLastModified = $('#user_last_modified').value;
 	
 	user.update_remote_from_local = function() {
 		if(debug) console.log("update_remote_from_local started.");
@@ -10551,7 +11116,8 @@ if (sync_mode) {
 			if (--timer < 0) {
 				timer = duration;
 				// Launch Push
-
+				caret_position = window.rangy.saveSelection();
+				
 				minAjax({
 					url: "/fetch-memo",
 					//request URL
@@ -10562,9 +11128,12 @@ if (sync_mode) {
 					},
 					success: function(memo) {
 						localStorage.setItem(localstorage_var_name, memo);
-						$('editable').innerHTML = memo;
+						
+						$('#editable').innerHTML = memo;
+						window.rangy.restoreSelection(window.caret_position);
+						
 						display.textContent = 'All synced.';
-							if(debug) console.log("update_local_from_remote finished.");
+						if(debug) console.log("update_local_from_remote finished.");
 
 					}
 				});
@@ -10580,71 +11149,12 @@ if (sync_mode) {
 		// Set last saved memo.
 		localStorage.setItem(localstorage_var_name, user.memo);
 	}
-	remoteLastModifiedMarker = $('remoteLastModified');
-}
+	remoteLastModifiedMarker = $('#remoteLastModified');
 
-addEvent(editable, 'keyup', function(e) {
-	window.clearTimeout(localSaveTimer);
-	window.clearTimeout(parseHtmlTimer);
-	
-/*
-	if (e.keyCode === 17 || e.which === ctrlKey) {
-		// when ctrl is released
-		console.log("contenteditable Enabled");
-		this.contentEditable = true;  // reenable contentEditable
-	}
-*/
-
-	var d = new Date();
-	
-	localStorage.setItem(localstorage_var_name, this.innerHTML);
-	localStorage.setItem('localLastModified', d.toISOString().substring(0, 19).replace('T', ' ') );
-	hasChanged = true;
-	
-	localSaveTimer = setTimeout(
-		function(){ 
-			syncStatusMarker.innerHTML = 'Saved locally.';
-			setTimeout(function(){ syncStatusMarker.innerHTML = '';}, 3000);
-		}, 3000);
-	
-	if (sync_mode) {
-		user.update_local_from_remote(sync_pull_time);
-	}
-	
-	// Detect urls, etc.
-	parseHtmlTimer = setTimeout(function(){
-		medium.value( autolinker.link( editable.innerHTML ));
-	}, 2000);
-});
-addEvent(editable, 'keydown', function(e) {
-	syncStatusMarker.innerHTML = '';
-	
-/*
-	if (e.keyCode === 17 || e.which === ctrlKey) {
-		// when ctrl is pressed
-		console.log("contenteditable disabled");
-        this.contentEditable = false; 
-        // disable contentEditable
-    }
-*/
-});
-
-
-addEvent($('clear'), 'click', function() {
-	medium.value('');
-	localStorage.setItem(localstorage_var_name, '');
-	editable.focus();
-});
-
-// on page load, initialize the memo.
-if (localStorage.getItem(localstorage_var_name)) {
-	medium.value(localStorage.getItem(localstorage_var_name));
-}
-
-if (sync_mode) {
-
+	// Start Push
 	setInterval(user.update_remote_from_local, sync_push_time );
 
+	// Start Pull
 	addEvent(document, 'mousemove', function() {
 		user.update_local_from_remote(sync_pull_time);
 	});
@@ -10657,8 +11167,6 @@ if (sync_mode) {
 
 
 
-function reset(){
-	localStorage[localstorage_var_name] = medium.value('hello');
-}
+
 
 

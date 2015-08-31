@@ -22,7 +22,7 @@
 var synchronization = false;
 </script>
 </head>
-<body>
+<body id="dnfm">
 <div id="layout" class="pure-g">
     <div class="sidebar pure-u-1 pure-u-md-1-4">
         <div class="header">
@@ -51,7 +51,7 @@ synchronization = true;
 	
 	<?php }else{ ?>
 	
-	<a href="http://thecatapi.com" target="_blank" title="cats!"><img src="http://thecatapi.com/api/images/get?format=src&type=png,gif&size=small"></a>
+	<a href="http://thecatapi.com" target="_blank"  title="cats!"><img src="http://thecatapi.com/api/images/get?format=src&type=png,gif&size=small"></a>
 	
 	<?php } ?>
 	</span>
@@ -89,13 +89,16 @@ synchronization = true;
 		            <input type="button" id="clear" value="Erase">
 					<h1>Memos</h1>
 	            </header>
-				<section class="post">
+				<section class="post" style="">
 
 					<ol id="editable">
 						<li>Whatever you write here will be saved in your browser's local memory storage.</li>
 						<li>Keep this page opened in a tab at all time; it's especially useful for reminders, to-do lists, anything you mind comes up with that has potential value.</li>
 						<li>Go ahead, replace this text with whatever you should not forget.</li>
 					</ol>
+					
+					
+					
 					
 				</section>
 				<footer class="content-footer">
@@ -105,8 +108,12 @@ synchronization = true;
         </div>
     </div>
 </div>
-
-<script src="ui/js/min/dnfm-min.js?v=18"></script>
+<div id="templates">
+	
+	<div id="url-popup" class="popup"></div>
+	
+</div>
+<script src="ui/js/min/dnfm-min.js?v=19"></script>
 <?php
 if (SERVER ==='live'){
 ?>
