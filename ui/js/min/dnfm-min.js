@@ -38,6 +38,8 @@ function $(query) {
       }
 }
 
+
+
 // useful to remove A anchors from html string
 // http://stackoverflow.com/questions/4536329/whats-the-best-way-to-strip-out-only-the-anchor-html-tags-in-javascript-given
 function unwrapAnchors() {
@@ -10978,7 +10980,19 @@ addEvent(document.body, 'keydown',function(e){
 	}
 });
 
+function update_dnfm_editor(e){
+
+}
+
+addEvent(editable, 'paste', function(e){
+	console.log("paste detected.");
+	
+	if (typeof this.onkeyup === "function") {
+    	this.onkeyup.apply(this);
+	}
+});
 addEvent(editable, 'keyup', function(e) {
+	console.log("keyup detected or triggered.");
 	window.clearTimeout(localSaveTimer);
 	window.clearTimeout(parseHtmlTimer);
 
@@ -10998,25 +11012,22 @@ addEvent(editable, 'keyup', function(e) {
 		user.update_local_from_remote(sync_pull_time);
 	}
 	
-	// Detect urls, etc.
-	parseHtmlTimer = setTimeout(function(){
-
-		// save caret position
-		caret_position = window.rangy.saveSelection();
-		console.log("caret position set to "+ window.caret_position);
+	
+	// PARSE FOR URLS.
+	caret_position = window.rangy.saveSelection();
+	console.log("caret position set to "+ window.caret_position);
 		
-		// remove previous anchored version of the content
-		var a = editable.getElementsByTagName('a');
-		while(a.length) {
-			unwrapAnchors.call(a[a.length - 1]);
-		};
+	// remove previous anchored version of the content
+	var a = editable.getElementsByTagName('a');
+	while(a.length) {
+		unwrapAnchors.call(a[a.length - 1]);
+	};
 
-		// convert urls to anchors
-		medium.value( autolinker.link( editable.innerHTML ));
+	// convert urls to anchors
+	medium.value( autolinker.link( editable.innerHTML ));
 
-		// restore caret position
-		window.rangy.restoreSelection(window.caret_position);
-	}, 2000);
+	// restore caret position
+	window.rangy.restoreSelection(window.caret_position);
 });
 
 // SHOW URL POPUP

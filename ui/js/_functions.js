@@ -15,6 +15,8 @@ function $(query) {
       }
 }
 
+
+
 // useful to remove A anchors from html string
 // http://stackoverflow.com/questions/4536329/whats-the-best-way-to-strip-out-only-the-anchor-html-tags-in-javascript-given
 function unwrapAnchors() {

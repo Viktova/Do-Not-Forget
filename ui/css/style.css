@@ -1379,14 +1379,19 @@ h3 {
     top: 0;
     bottom: 0; } }
 [contenteditable="true"]:hover, [contenteditable="true"]:focus {
-  background: #FFFFEE; }
-
-#editable:hover, #editable:focus {
   background: #FFFFEE;
   border: 1px dotted #FFFFEE;
   outline: none;
   position: relative; }
 
+/*
+#editable:hover, #editable:focus {
+  background: #FFFFEE;
+  border:1px dotted #FFFFEE;
+  outline: none;
+  position:relative;
+}
+*/
 #editable {
   counter-reset: item;
   padding: 0;
@@ -1452,3 +1457,53 @@ h3 {
   z-index: 10;
   white-space: nowrap;
   display: none; }
+
+@media print {
+  .content {
+    padding: 2em 0 0;
+    margin-left: 0%; }
+
+  .posts {
+    width: 100%;
+    display: block; }
+
+  .dont-print {
+    display: none; }
+
+  ol#editable,
+  ol#editable:focus,
+  ol#editable:hover,
+  #editable,
+  [contenteditable],
+  [contenteditable="true"]:hover,
+  [contenteditable="true"]:focus,
+  #editable:hover,
+  #editable:focus {
+    background-color: #FFFFFF !important;
+    border-color: #FFFFFF;
+    background: #FFFFFF !important; }
+
+  /* Links */
+  a:link, a:visited {
+    background: transparent;
+    text-decoration: underline;
+    color: #333; }
+
+  a:link[href^="http://"]:after, a[href^="http://"]:visited:after {
+    content: " (" attr(href) ") ";
+    font-size: 90%; }
+
+  abbr[title]:after {
+    content: " (" attr(title) ")"; }
+
+  /* Don't show linked images  */
+  a[href^="http://"] {
+    color: #000; }
+
+  a[href$=".jpg"]:after, a[href$=".jpeg"]:after, a[href$=".gif"]:after, a[href$=".png"]:after {
+    content: " (" attr(href) ") ";
+    display: none; }
+
+  /* Don't show links that are fragment identifiers, or use the `javascript:` pseudo protocol .. taken from html5boilerplate */
+  a[href^="#"]:after, a[href^="javascript:"]:after {
+    content: ""; } }
