@@ -4,7 +4,7 @@ $light-blue: rgb(176, 202, 219);
 $dark-blue: #113D5E;
 
 
-body{font-family:sans-serif;}
+body{font-family:sans-serif; position:relative;}
 
 @import 'pure';
 
@@ -94,11 +94,13 @@ h3 {
 .content-footer{
 	border-top: 1px solid #eee;
 	padding-top:1em;
-	.sync-status{
+	font-size:80%;
+	color: #CCC;
+	a{
 		color:#CCC;
-		float:left;
 		margin-right:1em;
 	}
+	
 }
 .content-subhead{
 	overflow: hidden;
@@ -107,7 +109,8 @@ h3 {
 
 
 
-	#clear{
+	#clear,
+	.button-as-link{
 		 font-size: 80%;
 		 font-weight: 500;
 		padding: 0.4rem 0;
@@ -169,21 +172,21 @@ h3 {
     }
 }    
 
-[contenteditable]:hover, [contenteditable]:focus {
-  background: #FFFFEE;
-}
-#editable:hover, #editable:focus {
-  background: #FFFFEE;
-  border:1px dotted #FFFFEE;
-  outline: none;
+[contenteditable="true"]:hover, [contenteditable="true"]:focus {
+	background: #FFFFEE;
+	border:1px dotted #FFFFEE;
+    outline: none;
+	position:relative;
 }
 
-#editable { 
+#editable,
+.post > ol { 
 	counter-reset: item; 
 	padding:0; 
 	padding-left:2rem; 
 	border:1px solid white;
 	transition: all .5s ease-out;
+	position:relative;
 	* {
 		font-size:1.5rem;
 		line-height: 150%;	
@@ -193,7 +196,7 @@ h3 {
 		display: block; 
 		color:#222; 
 		margin-bottom: 1.5rem;
-
+		position:relative;
 		&:before {
 			content: counter(item) ". ";
 			counter-increment: item;
@@ -222,4 +225,48 @@ h3 {
 		height:75px;
 		margin:auto;
     }
+}
+#templates{display:none;}
+
+@import 'pixeline-tip';
+
+@media print {
+	.content {
+        padding: 2em 0 0;
+        margin-left: 0%;
+    }
+	.posts{
+		width:100%;
+		display:block;
+	}
+  .dont-print {
+    display: none;
+  }
+  ol#editable,
+  ol#editable:focus,
+  ol#editable:hover,
+  #editable,
+  [contenteditable],
+  [contenteditable="true"]:hover, 
+  [contenteditable="true"]:focus,
+  #editable:hover, 
+  #editable:focus {
+	  background-color: #FFFFFF !important;
+	  border-color: #FFFFFF;
+  	background: #FFFFFF !important;
+  }
+
+  // Source: https://github.com/vladocar/Hartija---CSS-Print-Framework/
+  
+  /* Links */
+  a:link, a:visited { background: transparent; text-decoration: underline; color:#333; }
+  a:link[href^="http://"]:after, a[href^="http://"]:visited:after { content: " (" attr(href) ") "; font-size: 90%; }
+  
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  
+  /* Don't show linked images  */
+  a[href^="http://"] {color:#000; }
+  a[href$=".jpg"]:after, a[href$=".jpeg"]:after, a[href$=".gif"]:after, a[href$=".png"]:after { content: " (" attr(href) ") "; display:none; }
+  /* Don't show links that are fragment identifiers, or use the `javascript:` pseudo protocol .. taken from html5boilerplate */
+  a[href^="#"]:after, a[href^="javascript:"]:after {content: "";}
 }

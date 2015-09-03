@@ -1,0 +1,5 @@
+URL PARSING
+
+nécessaire uniquement lorsque keyup keycode = SPACE, ENTER, PASTE, et sur la dernière partie du contenu ajouté.
+
+ce sera plus facile de rétablir le curseur ainsi.

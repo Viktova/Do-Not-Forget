@@ -17,14 +17,14 @@
 	<meta property="og:description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting.">
 	<meta property="og:type" content="article">
 
-  <link rel="stylesheet" href="ui/css/style.css?v=19">
+  <link rel="stylesheet" href="ui/css/style.css?v=21">
 <script>
 var synchronization = false;
 </script>
 </head>
-<body>
+<body id="dnfm">
 <div id="layout" class="pure-g">
-    <div class="sidebar pure-u-1 pure-u-md-1-4">
+    <div class="sidebar pure-u-1 pure-u-md-1-4 dont-print">
         <div class="header">
             <h1 class="brand-title">Do Not Forget</h1>
 			<h2 class="brand-tagline">Jot down that thought before it flies away.</h2>
@@ -51,7 +51,7 @@ synchronization = true;
 	
 	<?php }else{ ?>
 	
-	<a href="http://thecatapi.com" target="_blank" title="cats!"><img src="http://thecatapi.com/api/images/get?format=src&type=png,gif&size=small"></a>
+	<a href="http://thecatapi.com" target="_blank"  title="cats!"><img src="http://thecatapi.com/api/images/get?format=src&type=png,gif&size=small"></a>
 	
 	<?php } ?>
 	</span>
@@ -75,7 +75,7 @@ synchronization = true;
 ?>
 
         </div>
-        <p id="credits">
+        <p id="credits" class="dont-print">
 	        &copy; <?= date('Y');?> <a href="https://pixeline.be">pixeline.be</a>
 	    </p>
     </div>
@@ -84,29 +84,18 @@ synchronization = true;
         <div>
             <!-- A wrapper for all the blog posts -->
             <div class="posts">
-	            <header class="content-subhead">
+	            <?php echo $this->render($content); ?>
 
-		            <input type="button" id="clear" value="Erase">
-					<h1>Memos</h1>
-	            </header>
-				<section class="post">
-
-					<ol id="editable">
-						<li>Whatever you write here will be saved in your browser's local memory storage.</li>
-						<li>Keep this page opened in a tab at all time; it's especially useful for reminders, to-do lists, anything you mind comes up with that has potential value.</li>
-						<li>Go ahead, replace this text with whatever you should not forget.</li>
-					</ol>
-					
-				</section>
-				<footer class="content-footer">
-					
-				</footer>
             </div>
         </div>
     </div>
 </div>
-
-<script src="ui/js/min/dnfm-min.js?v=18"></script>
+<div id="templates" class="dont-print">
+	
+	<div id="url-popup" class="popup"></div>
+	
+</div>
+<script src="ui/js/min/dnfm-min.js?v=23"></script>
 <?php
 if (SERVER ==='live'){
 ?>

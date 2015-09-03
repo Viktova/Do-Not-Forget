@@ -1,5 +1,6 @@
 body {
-  font-family: sans-serif; }
+  font-family: sans-serif;
+  position: relative; }
 
 /*!
 Pure v0.6.0
@@ -1318,17 +1319,19 @@ h3 {
 
 .content-footer {
   border-top: 1px solid #eee;
-  padding-top: 1em; }
-  .content-footer .sync-status {
+  padding-top: 1em;
+  font-size: 80%;
+  color: #CCC; }
+  .content-footer a {
     color: #CCC;
-    float: left;
     margin-right: 1em; }
 
 .content-subhead {
   overflow: hidden;
   border-bottom: 1px solid #eee;
   line-height: 1; }
-  .content-subhead #clear {
+  .content-subhead #clear,
+  .content-subhead .button-as-link {
     font-size: 80%;
     font-weight: 500;
     padding: 0.4rem 0;
@@ -1337,7 +1340,8 @@ h3 {
     color: #CCC;
     float: right;
     vertical-align: baseline; }
-    .content-subhead #clear:hover {
+    .content-subhead #clear:hover,
+    .content-subhead .button-as-link:hover {
       color: black; }
   .content-subhead h1 {
     text-transform: uppercase;
@@ -1377,28 +1381,32 @@ h3 {
     position: fixed;
     top: 0;
     bottom: 0; } }
-[contenteditable]:hover, [contenteditable]:focus {
-  background: #FFFFEE; }
-
-#editable:hover, #editable:focus {
+[contenteditable="true"]:hover, [contenteditable="true"]:focus {
   background: #FFFFEE;
   border: 1px dotted #FFFFEE;
-  outline: none; }
+  outline: none;
+  position: relative; }
 
-#editable {
+#editable,
+.post > ol {
   counter-reset: item;
   padding: 0;
   padding-left: 2rem;
   border: 1px solid white;
-  transition: all .5s ease-out; }
-  #editable * {
+  transition: all .5s ease-out;
+  position: relative; }
+  #editable *,
+  .post > ol * {
     font-size: 1.5rem;
     line-height: 150%; }
-  #editable li {
+  #editable li,
+  .post > ol li {
     display: block;
     color: #222;
-    margin-bottom: 1.5rem; }
-    #editable li:before {
+    margin-bottom: 1.5rem;
+    position: relative; }
+    #editable li:before,
+    .post > ol li:before {
       content: counter(item) ". ";
       counter-increment: item;
       color: #DDD;
@@ -1424,3 +1432,77 @@ h3 {
     width: 75px;
     height: 75px;
     margin: auto; }
+
+#templates {
+  display: none; }
+
+.popup {
+  position: absolute;
+  display: none;
+  background-color: #fff;
+  border-radius: 2px;
+  border: 1px solid;
+  border-color: #bbb #bbb #a8a8a8;
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  -ms-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  color: #666;
+  cursor: default;
+  padding: 12px 20px;
+  min-width: 120px;
+  min-height: 40px;
+  width: auto;
+  z-index: 10;
+  white-space: nowrap;
+  display: none; }
+
+@media print {
+  .content {
+    padding: 2em 0 0;
+    margin-left: 0%; }
+
+  .posts {
+    width: 100%;
+    display: block; }
+
+  .dont-print {
+    display: none; }
+
+  ol#editable,
+  ol#editable:focus,
+  ol#editable:hover,
+  #editable,
+  [contenteditable],
+  [contenteditable="true"]:hover,
+  [contenteditable="true"]:focus,
+  #editable:hover,
+  #editable:focus {
+    background-color: #FFFFFF !important;
+    border-color: #FFFFFF;
+    background: #FFFFFF !important; }
+
+  /* Links */
+  a:link, a:visited {
+    background: transparent;
+    text-decoration: underline;
+    color: #333; }
+
+  a:link[href^="http://"]:after, a[href^="http://"]:visited:after {
+    content: " (" attr(href) ") ";
+    font-size: 90%; }
+
+  abbr[title]:after {
+    content: " (" attr(title) ")"; }
+
+  /* Don't show linked images  */
+  a[href^="http://"] {
+    color: #000; }
+
+  a[href$=".jpg"]:after, a[href$=".jpeg"]:after, a[href$=".gif"]:after, a[href$=".png"]:after {
+    content: " (" attr(href) ") ";
+    display: none; }
+
+  /* Don't show links that are fragment identifiers, or use the `javascript:` pseudo protocol .. taken from html5boilerplate */
+  a[href^="#"]:after, a[href^="javascript:"]:after {
+    content: ""; } }

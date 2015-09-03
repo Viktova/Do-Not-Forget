@@ -1,5 +1,44 @@
-function $(id) {
-	return document.getElementById(id);
+function reset(){
+	localStorage[localstorage_var_name] = medium.value('hello');
+}
+function $(query) {
+	// jquery-like selector function.
+	// Based on http://jsperf.com/getelementbyid-vs-queryselector/11
+    var idSelectorRegexp = /^#[a-zA-Z]+[a-zA-Z0-9_\-]*$/;
+        // pure ID selector?
+      if (idSelectorRegexp.test(query)){
+        return document.getElementById(query.slice(1));
+	      
+      }
+      else {
+        return document.querySelector(query);	      
+      }
+}
+
+
+
+// useful to remove A anchors from html string
+// http://stackoverflow.com/questions/4536329/whats-the-best-way-to-strip-out-only-the-anchor-html-tags-in-javascript-given
+function unwrapAnchors() {
+    if(!('tagName' in this) || this.tagName.toLowerCase() !== 'a' || !('parentNode' in this)) {
+        return;
+    }
+    var childNodes = this.childNodes || [], children = [], child;
+    // Convert childNodes collection to array
+    for(var i = 0, childNodes = this.childNodes || []; i < childNodes.length; i++) {
+        children[i] = childNodes[i];
+    }
+    // Move children outside element
+    for(i = 0; i < children.length; i++) {
+        child = children[i];
+        if(('tagName' in child) && child.tagName.toLowerCase() === 'a') {
+            child.parentNode.removeChild(child);
+        } else {
+            this.parentNode.insertBefore(child, this);
+        }
+    }
+    // Remove now-empty anchor
+    this.parentNode.removeChild(this);
 }
 
 
@@ -48,9 +87,22 @@ function minAjax(e) {
 		else t.push(encodeURIComponent(p) + "=" + encodeURIComponent(c));
 	}
 	t = t.join("&"), "GET" === e.type && (o.open("GET", e.url + "?" + t, e.method), o.send(), 1 === e.debugLog && console.log("GET fired at:" + e.url + "?" + t)), "POST" === e.type && (o.open("POST", e.url, e.method), o.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), o.send(t), 1 === e.debugLog && console.log("POST fired at:" + e.url + " || Data:" + t));
-}
-// Html entity decoding
+};
 
+// Vanilla js equivalent to jquery on()
+function on(el, evt, sel, handler) {
+    el.addEventListener(evt, function(event) {
+        var t = event.target;
+        while (t && t !== this) {
+            if (t.matches(sel)) {
+                handler.call(t, event);
+            }
+            t = t.parentNode;
+        }
+    });
+}
+
+// Html entity decoding
 function decodeHtml(html) {
 	var txt = document.createElement("textarea");
 	txt.innerHTML = html;
@@ -89,5 +141,4 @@ var addEvent = (function() {
 		};
 	}
 })();
-
 

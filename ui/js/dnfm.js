@@ -1,4 +1,4 @@
-// @codekit-prepend "_variables.js", "_functions.js", "_medium.js";
+// @codekit-prepend "_variables.js", "_functions.js","_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
 /*
 	DO NOT FORGET ME
 	
@@ -7,63 +7,158 @@
 
 remove_facebook_token_in_url();
 
-editable = $('editable');
+editable = document.getElementById('editable');
+localLastModifiedMarker = $('#localLastModified');
+autolinker = new Autolinker( { className: "dnfm-editable-link" } );
+
 
 // Medium.js: Thanks and loving accolades to its creators
 // http://jakiestfu.github.io/Medium.js/docs/
 
-var medium = new Medium({
+medium = new Medium({
     element: editable,
     placeholder: "",
 	autofocus: true,
 	autoHR: true,
+	pasteAsText: true,
 	mode: Medium.richMode,
 	maxLength: -1,
-	modifiers: {
-		'b': 'bold',
-		'i': 'italicize',
-		'u': 'underline',
-		'v': 'paste'
-	},
 	tags: {
 		'break': 'br',
 		'horizontalRule': 'hr',
 		'paragraph': 'li',
 		'outerLevel': ['ol'],
-		'innerLevel': ['li', 'b', 'span','u', 'i', 'strong']
+		'innerLevel': ['li', 'b', 'span','u', 'i', 'strong', 'a']
 	},
 	attributes: {
-		remove: ['style', 'class']
+		remove: ['style']
+	},
+	beforeInvokeElement: function () {
+		// before bolding/italicing...
+	},
+	pasteEventHandler: function(e){
+				if(debug) console.log("PASTE !" + e);
+
 	}
 });
-medium.value(editable.innerHTML);
 
-if (debug) {
-	$('debugger').style.display = 'block';
+if (localStorage.getItem(localstorage_var_name)) {
+	medium.value(autolinker.link(localStorage.getItem(localstorage_var_name)));
+} else{
+	medium.value(autolinker.link(editable.innerHTML));	
 }
 
 
-// Synchronisation logic
+if (debug) {
+	$('#debugger').style.display = 'block';
+}
+
+addEvent(document.body, 'keydown',function(e){
+	// TOGGLE EDIT MODE VIA CTRL KEY
+	if (e.keyCode === 17 || e.which === 17) {
+		// when ctrl is released
+		editMode = !Boolean(editMode);
+		console.log("contenteditable is: "+ editMode);
+		editable.contentEditable =  editMode;
+	}
+});
+
+function update_dnfm_editor(e){
+
+}
+
+addEvent(editable, 'paste', function(e){
+	console.log("paste detected.");
+	
+	if (typeof this.onkeyup === "function") {
+    	this.onkeyup.apply(this);
+	}
+});
+addEvent(editable, 'keyup', function(e) {
+	console.log("keyup detected or triggered.");
+	window.clearTimeout(localSaveTimer);
+	window.clearTimeout(parseHtmlTimer);
+
+	var d = new Date();
+	
+	localStorage.setItem(localstorage_var_name, this.innerHTML);
+	localStorage.setItem('localLastModified', d.toISOString().substring(0, 19).replace('T', ' ') );
+	hasChanged = true;
+	
+	localSaveTimer = setTimeout(
+		function(){ 
+			syncStatusMarker.innerHTML = 'Saved locally.';
+			setTimeout(function(){ syncStatusMarker.innerHTML = '';}, 3000);
+		}, 3000);
+	
+	if (sync_mode) {
+		user.update_local_from_remote(sync_pull_time);
+	}
+	
+	
+	// PARSE FOR URLS.
+	caret_position = window.rangy.saveSelection();
+	console.log("caret position set to "+ window.caret_position);
+		
+	// remove previous anchored version of the content
+	var a = editable.getElementsByTagName('a');
+	while(a.length) {
+		unwrapAnchors.call(a[a.length - 1]);
+	};
+
+	// convert urls to anchors
+	medium.value( autolinker.link( editable.innerHTML ));
+
+	// restore caret position
+	window.rangy.restoreSelection(window.caret_position);
+});
+
+// SHOW URL POPUP
+on( document,'click', '#dnfm', function(e){
+	// Close popup on "click outside"
+	urlTip.hide();
+});
+
+urlTip = new Tip(); 
+urlTip.init();
+
+on(document, 'click', '.dnfm-editable-link', function(e){	
+	// show the popup
+	var link = this.getAttribute('href');
+	urlTip.content('<a href="'+ link +'" target="_blank">'+ link +'</a>');
+	urlTip.show(e.target);
+});
+
+addEvent(editable, 'keydown', function(e) {
+	urlTip.hide();
+	syncStatusMarker.innerHTML = '';
+});
+
+
+// RESET BUTTON
+addEvent($('#clear'), 'click', function() {
+	medium.value('');
+	localStorage.setItem(localstorage_var_name, '');
+
+	editable.focus();
+});
+
+// SYNCHRONISATION LOGIC
 sync_mode = window.synchronization || false;
 
-syncStatusMarker = $('sync-status-marker');
+syncStatusMarker = $('#sync-status-marker');
 
 if (sync_mode) {
 	
-	localstorage_var_name = 'memotab';
-	
 	user = {};
-	user.id = $('user_id').value;
-	user.email = $('user_email').value;
-	user.memo = decodeHtml($('user_memo').value);
-	user.remoteLastModified = $('user_last_modified').value;
+	user.id = $('#user_id').value;
+	user.email = $('#user_email').value;
+	user.memo = decodeHtml($('#user_memo').value);
+	user.remoteLastModified = $('#user_last_modified').value;
 	
 	user.update_remote_from_local = function() {
-		console.log("update_remote_from_local started.");
-/*
-		remoteLastModified = new Date(localStorage.remoteLastModified);
-		localLastModified = new Date(localStorage.getItem('localLastModified'));
-*/
+		if(debug) console.log("update_remote_from_local started.");
+
 		if (sync_mode && hasChanged ) {
 			syncStatusMarker.innerHTML = 'Syncing...';
 			minAjax({
@@ -82,13 +177,13 @@ if (sync_mode) {
 					user.remoteLastModified = remoteLastModified;
 					hasChanged = false;
 					syncStatusMarker.innerHTML = 'Saved online.';
-					console.log("update_remote_from_local finished.");
+					if(debug) console.log("update_remote_from_local finished.");
 				}
 			});
 		} else{
-			console.log("update_remote_from_local condition is false.");
-			console.log("sync_mode: "+ sync_mode);
-			console.log("hasChanged: "+ hasChanged);
+			if(debug) console.log("update_remote_from_local condition is false.");
+			if(debug) console.log("sync_mode: "+ sync_mode);
+			if(debug) console.log("hasChanged: "+ hasChanged);
 		}
 	};	
 
@@ -96,7 +191,7 @@ if (sync_mode) {
 	user.update_local_from_remote = function(duration) {
 		var display = document.querySelector('#sync-status-marker');
 		clearInterval(timerInt);
-		console.log("update_local_from_remote started.");
+		if(debug) console.log("update_local_from_remote started.");
 
 		var timer = duration,
 			minutes, seconds;
@@ -115,7 +210,8 @@ if (sync_mode) {
 			if (--timer < 0) {
 				timer = duration;
 				// Launch Push
-
+				caret_position = window.rangy.saveSelection();
+				
 				minAjax({
 					url: "/fetch-memo",
 					//request URL
@@ -126,9 +222,12 @@ if (sync_mode) {
 					},
 					success: function(memo) {
 						localStorage.setItem(localstorage_var_name, memo);
-						$('editable').innerHTML = memo;
+						
+						$('#editable').innerHTML = memo;
+						window.rangy.restoreSelection(window.caret_position);
+						
 						display.textContent = 'All synced.';
-							console.log("update_local_from_remote finished.");
+						if(debug) console.log("update_local_from_remote finished.");
 
 					}
 				});
@@ -144,57 +243,22 @@ if (sync_mode) {
 		// Set last saved memo.
 		localStorage.setItem(localstorage_var_name, user.memo);
 	}
-	remoteLastModifiedMarker = $('remoteLastModified');
-}
+	remoteLastModifiedMarker = $('#remoteLastModified');
 
+	// Start Push
+	setInterval(user.update_remote_from_local, sync_push_time );
 
-addEvent(editable, 'keyup', function() {
-	window.clearTimeout(localKeyUpTimer);
-	localStorage.setItem(localstorage_var_name, this.innerHTML);
-	var d = new Date();
-	var mysql_format = d.toISOString().substring(0, 19).replace('T', ' ');
-	localStorage.setItem('localLastModified', mysql_format);
-	hasChanged = true;
-	localKeyUpTimer = setTimeout(
-		function(){ 
-			syncStatusMarker.innerHTML = 'Saved locally.';
-			setTimeout(function(){ syncStatusMarker.innerHTML = '';}, 3000);
-		}, 3000);
-	
-	if (sync_mode) {
-		user.update_local_from_remote(20);
-	}
-});
-addEvent(editable, 'keydown', function() {
-	syncStatusMarker.innerHTML = '';
-});
-
-addEvent($('clear'), 'click', function() {
-	medium.value('');
-	localStorage.setItem(localstorage_var_name, '');
-	editable.focus();
-});
-// on page load, initialize the memo.
-if (localStorage.getItem(localstorage_var_name)) {
-	medium.value(localStorage.getItem(localstorage_var_name));
-}
-
-if (sync_mode) {
-
-	setInterval(user.update_remote_from_local, refresh_rate);
-
+	// Start Pull
 	addEvent(document, 'mousemove', function() {
-		user.update_local_from_remote(20);
+		user.update_local_from_remote(sync_pull_time);
 	});
 	
 	addEvent(window, 'beforeunload', function() {
 		user.update_remote_from_local();
 	}); 
-	user.update_local_from_remote(20);
+	user.update_local_from_remote(sync_pull_time);
 }
 
 
 
-function reset(){
-	localStorage[localstorage_var_name] = medium.value('hello');
-}
+
