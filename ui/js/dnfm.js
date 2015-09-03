@@ -9,7 +9,7 @@ remove_facebook_token_in_url();
 
 editable = document.getElementById('editable');
 localLastModifiedMarker = $('#localLastModified');
-autolinker = new Autolinker( { truncate: 25, className: "dnfm-editable-link" } );
+autolinker = new Autolinker( { truncate: 55, className: "dnfm-editable-link" } );
 
 
 // Medium.js: Thanks and loving accolades to its creators

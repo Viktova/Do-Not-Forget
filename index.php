@@ -36,6 +36,7 @@ $f3->route('GET /',
 		}
 
 		$f3->set('user', $f3->get('SESSION'));
+		$f3->set('content', 'home.htm');
 		
 		echo View::instance()->render('layout.htm');
 	}
@@ -76,6 +77,18 @@ $f3->route('POST /fetch-memo', function($f3){
 	echo stripslashes($user->memo);
 	exit;
 });
+
+$f3->route('GET /tips',
+	function($f3) {
+		if(empty($f3->get('SESSION.first'))){
+			$f3->set('SESSION.first', "sweet child o' mine");
+		}
+		$f3->set('user', $f3->get('SESSION'));
+		$f3->set('content', 'tips.htm');
+		echo View::instance()->render('layout.htm');
+	}
+);
+
 
 $f3->route('GET /logout',
 	function($f3) {

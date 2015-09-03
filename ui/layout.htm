@@ -17,8 +17,7 @@
 	<meta property="og:description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting.">
 	<meta property="og:type" content="article">
 
-  <link rel="stylesheet" href="ui/css/style.css?v=19">
-  <link rel="stylesheet" href="ui/css/style.css?v=19">
+  <link rel="stylesheet" href="ui/css/style.css?v=20">
 <script>
 var synchronization = false;
 </script>
@@ -85,23 +84,8 @@ synchronization = true;
         <div>
             <!-- A wrapper for all the blog posts -->
             <div class="posts">
-	            <header class="content-subhead ">
-		            <input type="button" id="clear" value="Erase" class="dont-print">
-					<h1>Memos</h1>
-	            </header>
-				<section class="post" style="">
+	            <?php echo $this->render($content); ?>
 
-					<ol id="editable">
-						<li>Whatever you write here will be saved in your browser's local memory storage.</li>
-						<li>Keep this page opened in a tab at all time; it's especially useful for reminders, to-do lists, anything you mind comes up with that has potential value.</li>
-						<li>Go ahead, replace this text with whatever you should not forget.</li>
-					</ol>
-					
-					
-					
-					
-				</section>
-				<footer class="content-footer"></footer>
             </div>
         </div>
     </div>
@@ -111,7 +95,7 @@ synchronization = true;
 	<div id="url-popup" class="popup"></div>
 	
 </div>
-<script src="ui/js/min/dnfm-min.js?v=20"></script>
+<script src="ui/js/min/dnfm-min.js?v=22"></script>
 <?php
 if (SERVER ==='live'){
 ?>

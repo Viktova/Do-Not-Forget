@@ -1319,17 +1319,19 @@ h3 {
 
 .content-footer {
   border-top: 1px solid #eee;
-  padding-top: 1em; }
-  .content-footer .sync-status {
+  padding-top: 1em;
+  font-size: 80%;
+  color: #CCC; }
+  .content-footer a {
     color: #CCC;
-    float: left;
     margin-right: 1em; }
 
 .content-subhead {
   overflow: hidden;
   border-bottom: 1px solid #eee;
   line-height: 1; }
-  .content-subhead #clear {
+  .content-subhead #clear,
+  .content-subhead .button-as-link {
     font-size: 80%;
     font-weight: 500;
     padding: 0.4rem 0;
@@ -1338,7 +1340,8 @@ h3 {
     color: #CCC;
     float: right;
     vertical-align: baseline; }
-    .content-subhead #clear:hover {
+    .content-subhead #clear:hover,
+    .content-subhead .button-as-link:hover {
       color: black; }
   .content-subhead h1 {
     text-transform: uppercase;
@@ -1384,30 +1387,26 @@ h3 {
   outline: none;
   position: relative; }
 
-/*
-#editable:hover, #editable:focus {
-  background: #FFFFEE;
-  border:1px dotted #FFFFEE;
-  outline: none;
-  position:relative;
-}
-*/
-#editable {
+#editable,
+.post > ol {
   counter-reset: item;
   padding: 0;
   padding-left: 2rem;
   border: 1px solid white;
   transition: all .5s ease-out;
   position: relative; }
-  #editable * {
+  #editable *,
+  .post > ol * {
     font-size: 1.5rem;
     line-height: 150%; }
-  #editable li {
+  #editable li,
+  .post > ol li {
     display: block;
     color: #222;
     margin-bottom: 1.5rem;
     position: relative; }
-    #editable li:before {
+    #editable li:before,
+    .post > ol li:before {
       content: counter(item) ". ";
       counter-increment: item;
       color: #DDD;

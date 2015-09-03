@@ -94,11 +94,13 @@ h3 {
 .content-footer{
 	border-top: 1px solid #eee;
 	padding-top:1em;
-	.sync-status{
+	font-size:80%;
+	color: #CCC;
+	a{
 		color:#CCC;
-		float:left;
 		margin-right:1em;
 	}
+	
 }
 .content-subhead{
 	overflow: hidden;
@@ -107,7 +109,8 @@ h3 {
 
 
 
-	#clear{
+	#clear,
+	.button-as-link{
 		 font-size: 80%;
 		 font-weight: 500;
 		padding: 0.4rem 0;
@@ -175,16 +178,9 @@ h3 {
     outline: none;
 	position:relative;
 }
-/*
-#editable:hover, #editable:focus {
-  background: #FFFFEE;
-  border:1px dotted #FFFFEE;
-  outline: none;
-  position:relative;
-}
-*/
 
-#editable { 
+#editable,
+.post > ol { 
 	counter-reset: item; 
 	padding:0; 
 	padding-left:2rem; 
