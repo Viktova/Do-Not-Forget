@@ -1384,6 +1384,8 @@ a.facebook-page:hover:before {
 
 .post {
   padding-bottom: 2em; }
+  .post p {
+    line-height: 1.4; }
 
 .footer {
   text-align: center;
