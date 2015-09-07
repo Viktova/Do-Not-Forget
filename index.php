@@ -37,6 +37,7 @@ $f3->route('GET /',
 
 		$f3->set('user', $f3->get('SESSION'));
 		$f3->set('content', 'home.htm');
+		$f3->set('menu_active', 'home');
 		
 		echo View::instance()->render('layout.htm');
 	}
@@ -85,10 +86,22 @@ $f3->route('GET /tips',
 		}
 		$f3->set('user', $f3->get('SESSION'));
 		$f3->set('content', 'tips.htm');
+		$f3->set('menu_active', 'tips');
 		echo View::instance()->render('layout.htm');
 	}
 );
 
+$f3->route('GET /about',
+	function($f3) {
+		if(empty($f3->get('SESSION.first'))){
+			$f3->set('SESSION.first', "sweet child o' mine");
+		}
+		$f3->set('user', $f3->get('SESSION'));
+		$f3->set('content', 'about.htm');
+		$f3->set('menu_active', 'about');
+		echo View::instance()->render('layout.htm');
+	}
+);
 
 $f3->route('GET /logout',
 	function($f3) {

@@ -28,6 +28,7 @@ var synchronization = false;
         <div class="header">
             <h1 class="brand-title">Do Not Forget</h1>
 			<h2 class="brand-tagline">Jot down that thought before it flies away.</h2>
+			
 <?php
 if($user['logged_in']==='ok'){
 // Good, we can now start autosaving.
@@ -68,16 +69,18 @@ synchronization = true;
 }else{
 	?>
 	<p>Bonus: login via your <a href="/auth/facebook<?php if (SERVER == 'dev'){ echo "-test";}?>">Facebook</a>, <a href="/auth/google">Google</a> or <a href="/auth/github">Github</a> account to keep these notes synced on all your browsers.</p>
-<p class="user-details">	<span id="sync-status-marker" class="sync-status"></span>
+<p class="user-details">
+	<span id="sync-status-marker" class="sync-status"></span>
 </p>
 <?php
 }
 ?>
 
         </div>
-        <p id="credits" class="dont-print">
-	        &copy; <?= date('Y');?> <a href="https://pixeline.be">pixeline.be</a>
-	    </p>
+        <div id="credits" class="dont-print">
+	        
+	        <?php include 'fragments/main-menu.php'; ?>
+	    </div>
     </div>
 
     <div class="content pure-u-1 pure-u-md-3-4">

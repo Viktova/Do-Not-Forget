@@ -1284,8 +1284,7 @@ h3 {
   .header p {
     margin-bottom: 1.4em; }
   .header a {
-    color: #588fb3;
-    color: #5e819b; }
+    color: #588fb3; }
 
 .sidebar {
   background: #113D5E;
@@ -1316,6 +1315,35 @@ h3 {
     font-size: 80%;
     font-weight: normal;
     color: #d3e2eb; }
+
+.main-menu {
+  margin: 2em auto;
+  text-transform: lowercase;
+  color: #b0cadb;
+  line-height: 1; }
+  .main-menu .spacer {
+    display: inline-block;
+    vertical-align: middle; }
+  .main-menu a {
+    padding: 2px 4px 1px; }
+  .main-menu a.active, .main-menu a:hover, .main-menu a:focus {
+    text-decoration: underline; }
+  .main-menu a:hover {
+    color: white; }
+
+a.facebook-page b {
+  display: none; }
+a.facebook-page:before {
+  content: "f";
+  background: #b0cadb;
+  border-radius: 10px;
+  color: #113D5E;
+  display: inline-block;
+  text-align: center;
+  padding: 2px 7px;
+  margin-right: 5px; }
+a.facebook-page:hover:before {
+  background: white; }
 
 .content-footer {
   border-top: 1px solid #eee;
@@ -1411,6 +1439,13 @@ h3 {
       counter-increment: item;
       color: #DDD;
       margin-left: -2rem; }
+  #editable ol,
+  .post > ol ol {
+    counter-reset: item2; }
+    #editable ol li:before,
+    .post > ol ol li:before {
+      content: counter(item) "." counter(item2) ". ";
+      counter-increment: item2; }
 
 .firstname {
   font-style: italic; }

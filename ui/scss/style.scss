@@ -1,6 +1,7 @@
 
 $lighter-grey: #eeeeee;
 $light-blue: rgb(176, 202, 219);
+$blue: darken($light-blue,25%);
 $dark-blue: #113D5E;
 
 
@@ -46,8 +47,7 @@ h3 {
 	line-height: 1.4;
 	p{margin-bottom:1.4em}
 	a{
-		color: darken($light-blue,25%);
-		color: #5e819b;
+		color: $blue;
 	}
 }
 
@@ -89,7 +89,42 @@ h3 {
 	}
 }
 
+.main-menu{
+	margin:2em auto;
+	text-transform: lowercase;
+	color: $light-blue;
+	line-height:1;
+	.spacer{
+		display:inline-block;
+		vertical-align: middle;
+	}
+	a{
+		padding:2px 4px 1px;
+	}
+	a.active, a:hover, a:focus{
+		text-decoration: underline;
+	}
+	a:hover{
+		color:white;
+	}
+}
 
+a.facebook-page{
+	b{display:none;}
+	&:before{
+		content: "f";
+		background: $light-blue;
+		border-radius:10px;
+		color: $dark-blue;
+		display:inline-block;
+		text-align: center;
+		padding:2px 7px;
+		margin-right:5px;
+	}
+	&:hover:before{
+			background:white;
+	}
+}
 
 .content-footer{
 	border-top: 1px solid #eee;
@@ -202,6 +237,13 @@ h3 {
 			counter-increment: item;
 			color: #DDD;
 			margin-left:-2rem;
+		}
+	}
+	ol{
+		counter-reset: item2; 
+		li:before {
+			content: counter(item) "." counter(item2) ". ";
+			counter-increment: item2;	
 		}
 	}
 }
