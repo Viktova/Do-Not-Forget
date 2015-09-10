@@ -50,6 +50,7 @@ if (localStorage.getItem(localstorage_var_name)) {
 
 
 if (debug) {
+	sync_mode = true;
 	$('#debugger').style.display = 'block';
 }
 
@@ -63,19 +64,14 @@ addEvent(document.body, 'keydown',function(e){
 	}
 });
 
-function update_dnfm_editor(e){
-
-}
-
 addEvent(editable, 'paste', function(e){
-	console.log("paste detected.");
 	
 	if (typeof this.onkeyup === "function") {
     	this.onkeyup.apply(this);
 	}
 });
 addEvent(editable, 'keyup', function(e) {
-	console.log("keyup detected or triggered.");
+	if(debug) console.log("keyup detected or triggered.");
 	window.clearTimeout(localSaveTimer);
 	window.clearTimeout(parseHtmlTimer);
 
@@ -85,10 +81,11 @@ addEvent(editable, 'keyup', function(e) {
 	localStorage.setItem('localLastModified', d.toISOString().substring(0, 19).replace('T', ' ') );
 	hasChanged = true;
 	
+	// update Status feedback after 3 seconds otherwise UI feels too nervous.
 	localSaveTimer = setTimeout(
 		function(){ 
 			syncStatusMarker.innerHTML = 'Saved locally.';
-			setTimeout(function(){ syncStatusMarker.innerHTML = '';}, 3000);
+			// setTimeout(function(){ syncStatusMarker.innerHTML = '';}, 3000);
 		}, 3000);
 	
 	if (sync_mode) {
@@ -131,7 +128,7 @@ on(document, 'click', '.dnfm-editable-link', function(e){
 
 addEvent(editable, 'keydown', function(e) {
 	urlTip.hide();
-	syncStatusMarker.innerHTML = '';
+	syncStatusMarker.innerHTML = '...';
 });
 
 
@@ -176,8 +173,12 @@ if (sync_mode) {
 					remoteLastModifiedMarker.innerHTML = remoteLastModified;
 					user.remoteLastModified = remoteLastModified;
 					hasChanged = false;
-					syncStatusMarker.innerHTML = 'Saved online.';
+					syncStatusMarker.innerHTML = 'Synched.';
 					if(debug) console.log("update_remote_from_local finished.");
+				},
+				error: function(data){
+					console.log("Error: could not sync!");
+					console.log(data);
 				}
 			});
 		} else{
@@ -201,9 +202,11 @@ if (sync_mode) {
 			minutes = minutes < 10 ? "0" + minutes : minutes;
 			seconds = seconds < 10 ? "0" + seconds : seconds;
 			display.textContent = '';
+/*
 			if (timer < (duration - 5)) {
 				display.textContent = '';
 			}
+*/
 			if (timer < (duration - 15)) {
 				display.textContent = 'Syncing in ' + minutes + ":" + seconds;
 			}

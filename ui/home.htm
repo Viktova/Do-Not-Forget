@@ -1,12 +1,16 @@
+<div id="tabs">
+<ul>
+	<li><a href="#memo-now">Today</a></li>
+	<li><a href="#memo-later">Later</a></li>
+	<li><a href="#memo-toreadandwatch">To read / watch</a></li>
+</ul>
 
-<div class="tab" id="memo-now">
+<div id="memo-now">
 	<header class="content-subhead ">
 		<input type="button" id="clear" value="Erase" class="dont-print">
-		<h1>Memos</h1>
 	</header>
 	<section class="post content-editable">
-
-		<ol id="editable">
+		<ol class="editable" id="now">
 			<li>Whatever you write here will be saved in your browser's local memory storage.</li>
 			<li>Keep this page opened in a tab at all time; it's especially useful for reminders, to-do lists, anything you mind comes up with that has potential value.</li>
 			<li>Go ahead, replace this text with whatever you should not forget.</li>
@@ -15,14 +19,13 @@
 	</section>
 </div>
 
-<div class="tab" id="memo-later">
+<div id="memo-later">
 	<header class="content-subhead ">
 		<input type="button" id="clear" value="Erase" class="dont-print">
-		<h1>Later</h1>
 	</header>
 	<section class="post content-editable">
 
-		<ol id="editable">
+		<ol class="editable" id="later">
 			<li>Things you should do.... soon.</li>
 		</ol>
 	
@@ -30,17 +33,19 @@
 	</section>
 </div>
 
-<div class="tab" id="memo-toreadandwatch">
+<div id="memo-toreadandwatch">
 	<header class="content-subhead ">
 		<input type="button" id="clear" value="Erase" class="dont-print">
-		<h1>To Read/ To Watch</h1>
 	</header>
 	<section class="post content-editable">
 
-		<ol id="editable">
+		<ol class="editable" id="toreadandwatch">
 			<li>Things you should watch or read, later on.</li>
 		</ol>
 	
 		<footer class="content-footer"></footer>			
 	</section>
+</div>
+
+
 </div>
