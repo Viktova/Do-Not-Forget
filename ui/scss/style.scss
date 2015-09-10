@@ -207,13 +207,13 @@ a.facebook-page{
 }    
 
 [contenteditable="true"]:hover, [contenteditable="true"]:focus {
-	background: #FFFFEE;
+	background:#f8f6f2;
 	border:1px dotted #FFFFEE;
     outline: none;
 	position:relative;
 }
 
-#editable,
+.editable,
 .post > ol { 
 	counter-reset: item; 
 	padding:0; 

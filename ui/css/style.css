@@ -1411,12 +1411,12 @@ a.facebook-page:hover:before {
     top: 0;
     bottom: 0; } }
 [contenteditable="true"]:hover, [contenteditable="true"]:focus {
-  background: #FFFFEE;
+  background: #f8f6f2;
   border: 1px dotted #FFFFEE;
   outline: none;
   position: relative; }
 
-#editable,
+.editable,
 .post > ol {
   counter-reset: item;
   padding: 0;
@@ -1424,26 +1424,26 @@ a.facebook-page:hover:before {
   border: 1px solid white;
   transition: all .5s ease-out;
   position: relative; }
-  #editable *,
+  .editable *,
   .post > ol * {
     font-size: 1.5rem;
     line-height: 150%; }
-  #editable li,
+  .editable li,
   .post > ol li {
     display: block;
     color: #222;
     margin-bottom: 1.5rem;
     position: relative; }
-    #editable li:before,
+    .editable li:before,
     .post > ol li:before {
       content: counter(item) ". ";
       counter-increment: item;
       color: #DDD;
       margin-left: -2rem; }
-  #editable ol,
+  .editable ol,
   .post > ol ol {
     counter-reset: item2; }
-    #editable ol li:before,
+    .editable ol li:before,
     .post > ol ol li:before {
       content: counter(item) "." counter(item2) ". ";
       counter-increment: item2; }
