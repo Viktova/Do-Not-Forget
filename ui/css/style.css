@@ -1509,7 +1509,7 @@ svg polygon {
   min-width: 120px;
   min-height: 40px;
   width: auto;
-  z-index: 10;
+  z-index: 99;
   white-space: nowrap;
   display: none; }
 
