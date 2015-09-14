@@ -1,16 +1,15 @@
 // @codekit-prepend "_jquery-2.1.4.min.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
-/*
-	DO NOT FORGET ME
-	
-*/
+
 /* RUNTIME */
 remove_facebook_token_in_url();
+
 (function($) {
 /*
 		******************************************************
 		SET UP THE STAGE
 		******************************************************		
 	*/
+	sync_mode = window.synchronization || false;
 	editable = $('.editable');
 	sync_status = $('#sync-status-marker');
 	autolinker = new Autolinker({
@@ -22,7 +21,7 @@ remove_facebook_token_in_url();
 		var this_var_name = localstorage_var_name +'-'+ $this.attr('id');
 		// Medium.js: Thanks and loving accolades to its creators
 		// http://jakiestfu.github.io/Medium.js/docs/
-		medium = new Medium({
+		var medium = new Medium({
 			element: this,
 			placeholder: "",
 			autofocus: true,
@@ -56,27 +55,33 @@ remove_facebook_token_in_url();
 		}
 		// set editors' initial content
 		medium.value(autolinker.link(initial_content));
+		user.editors[$this.attr('id')]=medium;
 	});
 /*
 		******************************************************
 		BIND EVENTS
 		******************************************************		
 	*/
-/*
-	$('body').on('keydown', function() {
-		// TOGGLE EDIT MODE VIA CTRL KEY
-		if (e.keyCode === 17 || e.which === 17) {
-			editMode = !Boolean(editMode);
-			console.log("contenteditable is: " + editMode);
-			editable.contentEditable = editMode;
-		}
-	});
-*/
+
 	editable
 		.on('keydown', function() {})
 		.on('keyup', function() {
 			var this_id = $(this).attr('id');
-			localStorage.setItem(localstorage_var_name+"-"+this_id, this.innerHTML);
+			localStorage.setItem(localstorage_var_name+"-"+this_id, $(this).html());
+			var d = new Date();
+			user.last_modified = d.toISOString().substring(0, 19).replace('T', ' ') ;
+			localStorage.setItem('localLastModified', user.last_modified );
+			hasChanged = true;
+			
+			// update Status feedback after 3 seconds otherwise UI feels too nervous.
+			localSaveTimer = setTimeout(
+				function(){ 
+					user.feedback.text('Saved locally.');
+				}, 3000
+			);
+			
+			// Save online
+			user.sync();
 		})
 		.on('paste', function() {
 			editable.trigger('keyup');
@@ -84,9 +89,9 @@ remove_facebook_token_in_url();
 })(jQuery);
 
 $(document).ready(function () {
-		// Set Tabs
-	$('#tabs').responsiveTabs({
-        setHash: true,
-       
-	});
+	// Set Tabs
+	$('#tabs').responsiveTabs({setHash: true});
+	if (sync_mode) {
+		user.call_home();
+	}
 });
