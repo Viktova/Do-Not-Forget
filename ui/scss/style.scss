@@ -267,8 +267,11 @@ a.facebook-page{
 		margin:auto;
     }
 }
+.sync-status{
+	height:20px;
+	display:inline-block;
+}
 #templates{display:none;}
-
 /* LOADING ICON */
 .cloud{
   margin: 0 0 2em;
@@ -280,7 +283,7 @@ a.facebook-page{
   display: inline-block;
   vertical-align: top;
 }
-
+.cloud{display:none;}
 /*
   Set the color of the icon
 */

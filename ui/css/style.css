@@ -1469,6 +1469,10 @@ a.facebook-page:hover:before {
     height: 75px;
     margin: auto; }
 
+.sync-status {
+  height: 20px;
+  display: inline-block; }
+
 #templates {
   display: none; }
 
@@ -1482,6 +1486,9 @@ a.facebook-page:hover:before {
   margin: 0 auto 1em;
   display: inline-block;
   vertical-align: top; }
+
+.cloud {
+  display: none; }
 
 /*
   Set the color of the icon

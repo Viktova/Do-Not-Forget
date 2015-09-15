@@ -71,6 +71,9 @@ urlTip.init();
 	*/
 	editable
 		.on('keydown', function() {
+			urlTip.hide();
+			clearTimeout(user.local_save_timer);
+			user.feedback.html(user.cloud.savingLocally);
 		})
 		.on('keyup', function() {
 			var $this = $(this);
@@ -90,13 +93,10 @@ urlTip.init();
 			
 			/*
 				BATTLEZONE/ curseur positionnement foire avec autolink
-			
-			> ESSAYER DE JOUER AVEC 
+			> jouer avec 
 			medium.cursor.caretToAfter(Element)  
 			ou medium.cursor.moveCursorToAfter(el)
 			ou medium.cursor.caretToEnd()
-
-
 			*/
 			
 			// 2. SAVE
@@ -105,17 +105,21 @@ urlTip.init();
 			var d = new Date();
 			user.last_modified = d.toISOString().substring(0, 19).replace('T', ' ') ;
 			localStorage.setItem('localLastModified', user.last_modified );
-			hasChanged = true;
+			user.hasChanged = true;
 			
 			// update Status feedback after 3 seconds otherwise UI feels too nervous.
-			localSaveTimer = setTimeout(
-				function(){ 
-					user.feedback.text('Saved locally.');
-				}, 3000
+			// 
+			user.feedback.html(user.cloud.savedLocally);
+			user.local_save_timer = setTimeout(
+				function(){
+					
+					//user.feedback.text('Saved locally.');
+					// Save online
+					user.sync();
+				}, 1000
 			);
 			
-			// Save online
-			user.sync();
+			
 		})
 		.on('paste', function() {
 			editable.trigger('keyup');

@@ -1,5 +1,14 @@
 URL PARSING
-
 nécessaire uniquement lorsque keyup keycode = SPACE, ENTER, PASTE, et sur la dernière partie du contenu ajouté.
-
 ce sera plus facile de rétablir le curseur ainsi.
+
+URL OPENGRAPH PREVIEW
+scraping via http://code.ramonkayo.com/simple-scraper/
+
+ux: une zone "status" à la facebook. Texte avec un url ou url uniquement. Si url, récupérer l'opengraph en ajax, l'afficher en dessous. Permettre de l'effacer.
+
+dev: partir d'une template html. Une fois l'url scrapé, lui ajouter deux attributs
+ data-scraped="DATETIME" 
+ data-scarped-url="URL"
+
+Au chargement du contenu, charger l'opengraph sauf pour les figure qui ont l'attribut data-scraped.

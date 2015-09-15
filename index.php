@@ -60,7 +60,7 @@ $f3->route('POST /synchronise-memo',
 		if($user->dry()){
 			die("non existing user.");
 		}
-		if($user->last_modified < $lastModified){
+		if($user->last_modified <= $lastModified){
 			// Save Data
 			$memo = str_replace(array("\n", "\r","\t"), '', $memo);
 			$user->memo = json_encode($memo);
