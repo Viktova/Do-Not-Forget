@@ -76,18 +76,26 @@ $f3->route('POST /synchronise-memo',
 		exit;
 });
 
-$f3->route('POST /fetch-memo', function($f3){
-	global $db;
-	$username = $f3->get('POST.email');
-	$id = $f3->get('POST.id');
-	$user = new DB\SQL\Mapper($db, 'memos');
-	$user->load(array('email = :username AND id= :id LIMIT 0,1', ':username'=>$username, ':id'=> $id ));
-	if($user->dry()){
-		die("non existing user.");
-	}
-	$f3->set('SESSION.memo',  stripslashes($user->memo));
-	echo stripslashes($user->memo);
-	exit;
+$f3->route('POST /scrape-url',function($f3){
+	$url = $f3->get('POST.url');
+	require 'classes/SimpleScraper.class.php';
+	$url = isset($url) ? $url : '';
+        try {
+            $scraper = new SimpleScraper($url);
+            $data = $scraper->getAllData();
+            $response = array(
+                'success' => true,
+                'ogp' => $data['ogp'],
+                'dump' => print_r($data, true)
+            );
+        } catch (Exception $e) {
+            $response = array(
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'log' => "$e"
+            );
+        }
+        echo json_encode($response);
 });
 
 $f3->route('GET /tips',
