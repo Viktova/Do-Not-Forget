@@ -77,9 +77,15 @@ h3 {
 	.brand-tagline {
     		margin: 0;
 	}
-	.brand-title {
+	h1.brand-title {
     	text-transform: uppercase;
 		color: lighten($light-blue, 15%);
+		a:link,
+		a:hover,
+		a:visited{
+			color: lighten($light-blue, 15%);
+			text-decoration: none;
+		}
 
 	}
 	h2.brand-tagline{
@@ -246,7 +252,15 @@ a.facebook-page{
 		}
 	}
 }
-
+.post.tips ol {
+	*{
+		font-size:1rem;
+		line-height: 1.5;
+	}
+	li{
+		margin-bottom:1rem;
+	}
+}
 .firstname{font-style: italic}
 #debugger{display:none;}
 

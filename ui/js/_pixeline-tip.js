@@ -16,7 +16,7 @@ Tip.prototype ={
 		this.popup = $('#url-popup');
 	},
 	
-	show: function(target){
+	show: function(target, callback){
 		var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
 		var scrollX = window.pageXOffset || document.documentElement.scrollLeft || 0;
 		var targetRect = target.getBoundingClientRect();
@@ -28,12 +28,20 @@ Tip.prototype ={
 		}
 		var top = (targetRect.top + scrollY - this.popup.height() - 25);
 		this.popup.css({display:'block', left: left+'px', top: top  + 'px' });
+		
+		if (callback && typeof(callback) === "function") {
+			callback();
+		}
+		
 	},
 	content: function(html){
 		this.popup.html(html);
 	},
-	hide: function(){
+	hide: function(callback){
 		this.popup.css('display','none');
+		if (callback && typeof(callback) === "function") {
+			callback();
+		}
 	}
 };
 

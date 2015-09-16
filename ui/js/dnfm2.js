@@ -1,4 +1,4 @@
-// @codekit-prepend "_jquery-2.1.4.min.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
+// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.ontextchange.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
 
 /* RUNTIME */
 remove_facebook_token_in_url();
@@ -16,7 +16,7 @@ urlTip.init();
 	$('#tabs').responsiveTabs({setHash: true});
 	
 	// Editable zones
-	sync_mode = window.synchronization || false;
+	user.sync_mode = window.synchronization || false;
 	editable = $('.editable');
 	sync_status = $('#sync-status-marker');
 	autolinker = new Autolinker({
@@ -33,12 +33,10 @@ urlTip.init();
 			placeholder: "",
 			autofocus: true,
 			autoHR: true,
-			pasteAsText: false,
+			pasteAsText: true,
 			mode: Medium.richMode,
 			maxLength: -1,
 			tags: {
-				'break': 'br',
-				'horizontalRule': 'hr',
 				'paragraph': 'li',
 				'outerLevel': ['ol'],
 				'innerLevel': ['li', 'b', 'span', 'u', 'i', 'strong', 'a', 'hr']
@@ -75,31 +73,40 @@ urlTip.init();
 			clearTimeout(user.local_save_timer);
 			user.feedback.html(user.cloud.savingLocally);
 		})
-		.on('keyup', function() {
+		.on('click.parse-urls keyup.parse-urls',function(e){
+			var $this =$(this);
+			$this.trigger('textchange.parse-url');
+
+		})
+		.on('textchange.parse-url',function(){
+			
+			var $this = $(this);
+			var tag = get_tag_at_caret();
+			if(tag.nodeName !== 'A'){
+				// Parse for Urls.
+				//console.log("Caret not on a A: parsing for urls.");
+				// remove previous anchored version of the content
+				$("a", $this).each(function(){
+					$(this).replaceWith($(this).text().trim());
+				});
+				caret_position = window.rangy.saveSelection();
+
+				// convert urls to anchors
+				$this.html( autolinker.link( $this.html()) );
+
+				// restore caret position
+				window.rangy.restoreSelection(caret_position);
+			}
+		})
+		.on('textchange', function() {
+			// use textchange for IE9 support
 			var $this = $(this);
 			var this_id = $this.attr('id');
 			
-			// Parse for Urls.
-			caret_position = window.rangy.saveSelection();
-			// remove previous anchored version of the content
-			$("a", $this).each(function(){
-				$(this).replaceWith($(this).text().trim());
-			});
-						
-			// convert urls to anchors
-			user.editors[$this.attr('id')].value(autolinker.link( $this.html()));
-			// restore caret position
-			window.rangy.restoreSelection(window.caret_position);
+			// PARSE URLS		
+			$this.trigger('textchange.parse-url');
 			
-			/*
-				BATTLEZONE/ curseur positionnement foire avec autolink
-			> jouer avec 
-			medium.cursor.caretToAfter(Element)  
-			ou medium.cursor.moveCursorToAfter(el)
-			ou medium.cursor.caretToEnd()
-			*/
-			
-			// 2. SAVE
+			// SAVE
 			// Save Offline
 			localStorage.setItem(localstorage_var_name+"-"+this_id, $this.html());
 			var d = new Date();
@@ -107,50 +114,40 @@ urlTip.init();
 			localStorage.setItem('localLastModified', user.last_modified );
 			user.hasChanged = true;
 			
-			// update Status feedback after 3 seconds otherwise UI feels too nervous.
-			// 
+			// After 3s idle time, save to cloud
 			user.feedback.html(user.cloud.savedLocally);
 			user.local_save_timer = setTimeout(
 				function(){
-					
-					//user.feedback.text('Saved locally.');
 					// Save online
 					user.sync();
-				}, 1000
+				}, 3000
 			);
-			
-			
 		})
 		.on('paste', function() {
-			editable.trigger('keyup');
+			$(this).trigger('textchange');
+		})
+		.on('click.showtip', 'a.dnfm-editable-link', function(e){
+			e.stopPropagation();
+			// show the popup
+			var link = $(this).text();
+			console.log(link);
+			urlTip.content('<a href="'+ link +'" target="_blank">'+ link +'</a>');
+			urlTip.show(e.target);
 		});
-		
-	// Synching
-	if (sync_mode) {
-		user.call_home();
-	}	
+
 	// If user is in any way active, cancel PUSH.
 	$(document).on('mousemove.reset mousedown.reset click.reset keydown.reset',function(e){
 		clearInterval(timerInt);
 		user.call_home();
-	});
-
-// Url Popup
-	$(document).on('click', function(e){
+	})
+	.on('click.outside', function(){
 		// Close popup on "click outside"
-		urlTip.hide();
-		console.log("click outside");
+		urlTip.hide(function(){
+			$(this).trigger('textchange.parse-url');
+		});
+		
 	});
 	
-	editable.on('click', 'a.dnfm-editable-link', function(e){
-		e.stopPropagation();
-		// show the popup
-		var link = $(this).attr('href');
-		console.log("a link to "+link+" has been clicked on "+ e.target);
-		urlTip.content('<a href="'+ link +'" target="_blank">'+ link +'</a>');
-		urlTip.show(e.target);
-	});
-	
+	// Start Sync-ing
+	user.call_home();
 })(jQuery);
-
-//$(document).ready(function () { });

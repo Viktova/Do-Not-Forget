@@ -30,7 +30,7 @@ var user = {
 		else
 		< pull
 	*/
-		if (user.hasChanged || user.should_call_home) {
+		if (user.sync_mode && (user.hasChanged || user.should_call_home)) {
 			// Stop any calls to home... Since we are calling home!
 			user.hasChanged = false;
 			user.should_call_home = false;
@@ -48,12 +48,11 @@ var user = {
 					toreadandwatch: localStorage.getItem('memotab-toreadandwatch')
 				}
 			};
-//			user.online_save_timer = setTimeout(function() {
 				user.feedback.html(user.cloud.loading);
 				var jqxhr = $.post('/synchronise-memo', data, function(result) {
 					user.remote_last_modified = result.last_modified;
 					if (result.memo) {
-						console.log("PUSH: Local content is rotten. Pushing new content from Server!");
+						//console.log("PUSH: Local content is rotten. Pushing new content from Server!");
 						// update local state with remote data (PUSH)
 						// break memo into the X memotabs data and localSTorage them.
 						var memos = JSON.parse(result.memo);
@@ -66,7 +65,6 @@ var user = {
 							};
 						}
 						user.feedback.html(user.cloud.refreshed);
-						//window.rangy.restoreSelection(window.caret_position);
 					} else {
 						//user.feedback.text('Saved to server.');
 						user.feedback.html(user.cloud.done);
@@ -76,7 +74,7 @@ var user = {
 					console.log("error triggered");
 					user.feedback.html(user.cloud.failed);
 				}).always(function() {
-					console.log("always triggered");
+					//console.log("always triggered");
 					user.call_home();
 				});
 //			}, user.sync_load_delay);
@@ -88,26 +86,25 @@ var user = {
 			purpose: make sure DNFM tabs on other computers have the freshest content.
 			how: this function starts a timer. If timer finishes, attempt a sync().
 		*/
-		clearInterval(user.call_home_timer);
-		//user.feedback.text('');
-		console.log("call_home launched.");
-		var push_timer = user.sync_save_delay,
-			minutes, seconds;
-		user.call_home_timer = setInterval(function() {
-			minutes = parseInt(push_timer / 60, 10);
-			seconds = parseInt(push_timer % 60, 10);
-			minutes = minutes < 10 ? "0" + minutes : minutes;
-			seconds = seconds < 10 ? "0" + seconds : seconds;
-			if (push_timer < (user.sync_save_delay - 15)) {
-				user.feedback.text('Refresh in ' + minutes + ":" + seconds);
-			}
-			if (--push_timer < 0) {
-				push_timer = user.sync_save_delay;
-				// Launch Push
-				user.should_call_home = true;
-				user.sync();
-			}
-		}, 1000);
+		if(user.sync_mode){
+			clearInterval(user.call_home_timer);
+			var push_timer = user.sync_save_delay, minutes, seconds;
+			user.call_home_timer = setInterval(function() {
+				minutes = parseInt(push_timer / 60, 10);
+				seconds = parseInt(push_timer % 60, 10);
+				minutes = minutes < 10 ? "0" + minutes : minutes;
+				seconds = seconds < 10 ? "0" + seconds : seconds;
+				if (push_timer < (user.sync_save_delay - 15)) {
+					user.feedback.text('Refresh in ' + minutes + ":" + seconds);
+				}
+				if (--push_timer < 0) {
+					push_timer = user.sync_save_delay;
+					// Launch Push
+					user.should_call_home = true;
+					user.sync();
+				}
+			}, 1000);	
+		}
 	}
 };
 
@@ -134,6 +131,11 @@ function scrape_url(){
 /*********************************************************
 	 HELPER FUNCTIONS 
 *********************************************************/
+// get Tag Element at Caret position
+function get_tag_at_caret() {
+   var node = document.getSelection().anchorNode;
+   return (node.nodeType == 3 ? node.parentNode : node);
+}
 
 // Remove weird Facebook callback token in url #_=_
 
@@ -147,8 +149,10 @@ function remove_facebook_token_in_url() {
 	}
 }
 //Ensures there will be no 'console is undefined' errors
+/*
 window.console = window.console || (function() {
 	var console = {};
 	console.log = console.warn = console.debug = console.info = console.error = console.time = console.dir = console.profile = console.clear = console.exception = console.trace = console.assert = function(s) {};
 	return console;
 })();
+*/
