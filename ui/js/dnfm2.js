@@ -1,4 +1,4 @@
-// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.ontextchange.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
+// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
 
 /* RUNTIME */
 remove_facebook_token_in_url();
@@ -73,7 +73,7 @@ urlTip.init();
 			clearTimeout(user.local_save_timer);
 			user.feedback.html(user.cloud.savingLocally);
 		})
-		.on('click.parse-urls keyup.parse-urls',function(e){
+		.on('click.parse-urls keyup.parse-urls tap.parse-urls',function(e){
 			var $this =$(this);
 			$this.trigger('textchange.parse-url');
 
@@ -126,13 +126,18 @@ urlTip.init();
 		.on('paste', function() {
 			$(this).trigger('textchange');
 		})
-		.on('click.showtip', 'a.dnfm-editable-link', function(e){
+		.on('click.showtip tap.showtip', 'a.dnfm-editable-link', function(e){
 			e.stopPropagation();
+			e.preventDefault();
 			// show the popup
 			var link = $(this).text();
-			console.log(link);
-			urlTip.content('<a href="'+ link +'" target="_blank">'+ link +'</a>');
+			var url = link;
+			if (!/^https?:\/\//i.test(url)) {
+				url = 'http://' + url;
+			}
+			urlTip.content('<a href="'+ url +'" target="_blank">'+ link +'</a>');
 			urlTip.show(e.target);
+			return false;
 		});
 
 	// If user is in any way active, cancel PUSH.
@@ -140,7 +145,7 @@ urlTip.init();
 		clearInterval(timerInt);
 		user.call_home();
 	})
-	.on('click.outside', function(){
+	.on('click.outside tap.outside', function(){
 		// Close popup on "click outside"
 		urlTip.hide(function(){
 			$(this).trigger('textchange.parse-url');

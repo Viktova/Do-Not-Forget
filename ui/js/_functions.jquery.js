@@ -58,10 +58,11 @@ var user = {
 						var memos = JSON.parse(result.memo);
 						for (var key in memos) {
 							if (memos.hasOwnProperty(key)) {
-								//console.log("storing "+ key +" locally.");
 								localStorage.setItem(localstorage_var_name + '-' + key, memos[key]);
 								// then update medium editors.
+								caret_position = window.rangy.saveSelection();
 								user.editors[key].value(memos[key]);
+								window.rangy.restoreSelection(window.caret_position);
 							};
 						}
 						user.feedback.html(user.cloud.refreshed);
