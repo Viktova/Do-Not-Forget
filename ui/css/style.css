@@ -1308,9 +1308,14 @@ h3 {
   .sidebar .brand-title,
   .sidebar .brand-tagline {
     margin: 0; }
-  .sidebar .brand-title {
+  .sidebar h1.brand-title {
     text-transform: uppercase;
     color: #e5edf3; }
+    .sidebar h1.brand-title a:link,
+    .sidebar h1.brand-title a:hover,
+    .sidebar h1.brand-title a:visited {
+      color: #e5edf3;
+      text-decoration: none; }
   .sidebar h2.brand-tagline {
     font-size: 80%;
     font-weight: normal;
@@ -1356,7 +1361,6 @@ a.facebook-page:hover:before {
 
 .content-subhead {
   overflow: hidden;
-  border-bottom: 1px solid #eee;
   line-height: 1; }
   .content-subhead #clear,
   .content-subhead .button-as-link {
@@ -1412,12 +1416,12 @@ a.facebook-page:hover:before {
     top: 0;
     bottom: 0; } }
 [contenteditable="true"]:hover, [contenteditable="true"]:focus {
-  background: #FFFFEE;
+  background: #f8f6f2;
   border: 1px dotted #FFFFEE;
   outline: none;
   position: relative; }
 
-#editable,
+.editable,
 .post > ol {
   counter-reset: item;
   padding: 0;
@@ -1425,29 +1429,35 @@ a.facebook-page:hover:before {
   border: 1px solid white;
   transition: all .5s ease-out;
   position: relative; }
-  #editable *,
+  .editable *,
   .post > ol * {
     font-size: 1.5rem;
     line-height: 150%; }
-  #editable li,
+  .editable li,
   .post > ol li {
     display: block;
     color: #222;
     margin-bottom: 1.5rem;
     position: relative; }
-    #editable li:before,
+    .editable li:before,
     .post > ol li:before {
       content: counter(item) ". ";
       counter-increment: item;
       color: #DDD;
       margin-left: -2rem; }
-  #editable ol,
+  .editable ol,
   .post > ol ol {
     counter-reset: item2; }
-    #editable ol li:before,
+    .editable ol li:before,
     .post > ol ol li:before {
       content: counter(item) "." counter(item2) ". ";
       counter-increment: item2; }
+
+.post.tips ol * {
+  font-size: 1rem;
+  line-height: 1.5; }
+.post.tips ol li {
+  margin-bottom: 1rem; }
 
 .firstname {
   font-style: italic; }
@@ -1470,9 +1480,36 @@ a.facebook-page:hover:before {
     height: 75px;
     margin: auto; }
 
+.sync-status {
+  height: 20px;
+  display: inline-block; }
+
 #templates {
   display: none; }
 
+/* LOADING ICON */
+.cloud {
+  margin: 0 0 2em;
+  height: 100px;
+  width: 20%;
+  text-align: center;
+  padding: 1em;
+  margin: 0 auto 1em;
+  display: inline-block;
+  vertical-align: top; }
+
+.cloud {
+  display: none; }
+
+/*
+  Set the color of the icon
+*/
+svg path,
+svg rect,
+svg polygon {
+  fill: #588fb3; }
+
+/* Tooltip */
 .popup {
   position: absolute;
   display: none;
@@ -1490,10 +1527,108 @@ a.facebook-page:hover:before {
   min-width: 120px;
   min-height: 40px;
   width: auto;
-  z-index: 10;
+  z-index: 99;
   white-space: nowrap;
   display: none; }
 
+/* Tabs */
+#tabs .r-tabs-nav {
+  text-align: left;
+  font-size: 0;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  border-bottom: 1px solid #eeeeee; }
+  #tabs .r-tabs-nav li {
+    margin: 0;
+    margin-right: 4px;
+    padding: 0;
+    display: inline-block; }
+    #tabs .r-tabs-nav li a {
+      display: inline-block;
+      font-weight: normal;
+      text-transform: uppercase;
+      color: #aaa;
+      padding: 0.4rem 16px;
+      font-size: 13px;
+      letter-spacing: 0.1rem;
+      line-height: 34px;
+      text-decoration: none;
+      background-color: #FFF;
+      outline: none;
+      border: 1px solid white;
+      border-top: 2px solid white;
+      border-bottom: 1px solid #eeeeee;
+      position: relative; }
+  #tabs .r-tabs-nav li a:hover,
+  #tabs .r-tabs-nav li.r-tabs-state-active a {
+    font-weight: normal;
+    border-color: #DDD;
+    border-top: 2px solid #588fb3;
+    border-bottom-color: white;
+    background: white;
+    z-index: 3; }
+
+.r-tabs .r-tabs-nav {
+  margin: 0;
+  padding: 0; }
+
+.r-tabs .r-tabs-tab {
+  display: inline-block;
+  margin: 0;
+  list-style: none; }
+
+.r-tabs .r-tabs-panel {
+  padding: 15px;
+  display: none; }
+
+.r-tabs .r-tabs-accordion-title {
+  display: none; }
+
+.r-tabs .r-tabs-panel.r-tabs-state-active {
+  display: block; }
+
+/* Accordion responsive breakpoint */
+/*
+@media only screen and (max-width: 768px) {
+    .r-tabs .r-tabs-nav {
+        display: none;
+    }
+
+    .r-tabs .r-tabs-accordion-title {
+        display: block;
+    }
+}
+*/
+@media only screen and (max-width: 560px) {
+  #tabs .r-tabs-nav {
+    box-sizing: border-box;
+    border-bottom: 1px solid #ccc;
+    min-width: 260px; }
+    #tabs .r-tabs-nav li {
+      display: inline;
+      box-sizing: border-box;
+      margin-right: 0;
+      width: auto;
+      min-width: auto; }
+      #tabs .r-tabs-nav li a {
+        border: none;
+        border-right: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        display: block;
+        padding: 0;
+        text-align: center;
+        border-radius: 0; }
+    #tabs .r-tabs-nav li:last-child:nth-child(odd) {
+      width: 100%; }
+    #tabs .r-tabs-nav li.r-tabs-state-active a {
+      background-color: #f4f4f4; }
+
+  .r-tabs-panel {
+    border-radius: 0;
+    min-width: 260px;
+    box-sizing: border-box; } }
+/* Printer-friendly version */
 @media print {
   .content {
     padding: 2em 0 0;

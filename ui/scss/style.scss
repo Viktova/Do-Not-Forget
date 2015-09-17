@@ -77,9 +77,15 @@ h3 {
 	.brand-tagline {
     		margin: 0;
 	}
-	.brand-title {
-    		text-transform: uppercase;
+	h1.brand-title {
+    	text-transform: uppercase;
 		color: lighten($light-blue, 15%);
+		a:link,
+		a:hover,
+		a:visited{
+			color: lighten($light-blue, 15%);
+			text-decoration: none;
+		}
 
 	}
 	h2.brand-tagline{
@@ -139,11 +145,8 @@ a.facebook-page{
 }
 .content-subhead{
 	overflow: hidden;
-	border-bottom: 1px solid #eee;
 	line-height:1;
-
-
-
+	
 	#clear,
 	.button-as-link{
 		 font-size: 80%;
@@ -159,7 +162,6 @@ a.facebook-page{
 		}
 	}
 	h1 {
-
 		 text-transform: uppercase;
 		 color: #aaa;
 		 padding: 0.4rem 0;
@@ -211,13 +213,13 @@ a.facebook-page{
 }    
 
 [contenteditable="true"]:hover, [contenteditable="true"]:focus {
-	background: #FFFFEE;
+	background:#f8f6f2;
 	border:1px dotted #FFFFEE;
     outline: none;
 	position:relative;
 }
 
-#editable,
+.editable,
 .post > ol { 
 	counter-reset: item; 
 	padding:0; 
@@ -250,7 +252,15 @@ a.facebook-page{
 		}
 	}
 }
-
+.post.tips ol {
+	*{
+		font-size:1rem;
+		line-height: 1.5;
+	}
+	li{
+		margin-bottom:1rem;
+	}
+}
 .firstname{font-style: italic}
 #debugger{display:none;}
 
@@ -271,47 +281,37 @@ a.facebook-page{
 		margin:auto;
     }
 }
+.sync-status{
+	height:20px;
+	display:inline-block;
+}
 #templates{display:none;}
-
+/* LOADING ICON */
+.cloud{
+  margin: 0 0 2em;
+  height: 100px;
+  width: 20%;
+  text-align: center;
+  padding: 1em;
+  margin: 0 auto 1em;
+  display: inline-block;
+  vertical-align: top;
+}
+.cloud{display:none;}
+/*
+  Set the color of the icon
+*/
+svg path,
+svg rect,
+svg polygon{
+  fill: $blue;
+}
+/* Tooltip */
 @import 'pixeline-tip';
+/* Tabs */
+@import 'responsive-tabs';
 
+/* Printer-friendly version */
 @media print {
-	.content {
-        padding: 2em 0 0;
-        margin-left: 0%;
-    }
-	.posts{
-		width:100%;
-		display:block;
-	}
-  .dont-print {
-    display: none;
-  }
-  ol#editable,
-  ol#editable:focus,
-  ol#editable:hover,
-  #editable,
-  [contenteditable],
-  [contenteditable="true"]:hover, 
-  [contenteditable="true"]:focus,
-  #editable:hover, 
-  #editable:focus {
-	  background-color: #FFFFFF !important;
-	  border-color: #FFFFFF;
-  	background: #FFFFFF !important;
-  }
-
-  // Source: https://github.com/vladocar/Hartija---CSS-Print-Framework/
-  
-  /* Links */
-  a:link, a:visited { background: transparent; text-decoration: underline; color:#333; }
-  a:link[href^="http://"]:after, a[href^="http://"]:visited:after { content: " (" attr(href) ") "; font-size: 90%; }
-  
-  abbr[title]:after { content: " (" attr(title) ")"; }
-  
-  /* Don't show linked images  */
-  a[href^="http://"] {color:#000; }
-  a[href$=".jpg"]:after, a[href$=".jpeg"]:after, a[href$=".gif"]:after, a[href$=".png"]:after { content: " (" attr(href) ") "; display:none; }
-  /* Don't show links that are fragment identifiers, or use the `javascript:` pseudo protocol .. taken from html5boilerplate */
-  a[href^="#"]:after, a[href^="javascript:"]:after {content: "";}
+	@import 'print';
 }

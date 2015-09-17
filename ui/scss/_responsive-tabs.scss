@@ -1,0 +1,118 @@
+// RESPONSIVE TABS
+#tabs .r-tabs-nav
+{
+    text-align:left;  
+    font-size:0;
+    margin:0;
+    padding:0;
+    list-style-type:none;
+    border-bottom:1px solid $lighter-grey;
+    
+    li {
+    	margin:0;
+		margin-right:4px;
+		padding:0;
+		display:inline-block;
+		
+		a {
+			display:inline-block;   
+			font-weight:normal;
+			text-transform: uppercase;
+			color: #aaa;
+			padding: 0.4rem 16px;
+			font-size: 13px;
+			letter-spacing: 0.1rem;
+			line-height:34px;
+			text-decoration: none;
+			background-color:#FFF;
+			outline:none;
+			border:1px solid white;
+			border-top:2px solid white;
+			border-bottom:1px solid $lighter-grey;
+			position:relative;
+			// @extend.brand-title;
+		} 
+	}
+	li a:hover,
+	li.r-tabs-state-active a
+	{
+    	font-weight:normal;
+		border-color:#DDD;
+		border-top: 2px solid $blue;
+		border-bottom-color: white;
+		background:white;
+		z-index:3;
+	}
+}
+
+.r-tabs .r-tabs-nav {
+    margin: 0;
+    padding: 0;
+}
+
+.r-tabs .r-tabs-tab {
+    display: inline-block;
+    margin: 0;
+    list-style: none;
+}
+
+.r-tabs .r-tabs-panel {
+    padding: 15px;
+    display: none;
+}
+
+.r-tabs .r-tabs-accordion-title {
+    display: none;
+}
+
+.r-tabs .r-tabs-panel.r-tabs-state-active {
+    display: block;
+}
+
+/* Accordion responsive breakpoint */
+/*
+@media only screen and (max-width: 768px) {
+    .r-tabs .r-tabs-nav {
+        display: none;
+    }
+
+    .r-tabs .r-tabs-accordion-title {
+        display: block;
+    }
+}
+*/
+@media only screen and (max-width:560px){
+    #tabs .r-tabs-nav{
+        box-sizing:border-box;
+        border-bottom:1px solid #ccc;
+        min-width:260px;
+    
+		li{
+        	display:inline;
+			box-sizing:border-box;
+			margin-right:0;
+			width:auto;
+			min-width:auto;
+			a {
+				border:none;
+				border-right:1px solid #ccc;
+				border-bottom:1px solid #ccc;
+				display:block;
+				padding:0;
+				text-align:center;
+				border-radius:0;
+			}
+    	}
+		li:last-child:nth-child(odd){
+        	width:100%;
+    	}
+    	li.r-tabs-state-active a {
+        	background-color:#f4f4f4;
+		}
+    }
+	.r-tabs-panel {
+        border-radius:0;
+        min-width:260px;
+        box-sizing:border-box;
+    }
+}	
