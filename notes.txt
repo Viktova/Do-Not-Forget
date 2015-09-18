@@ -1,7 +1,8 @@
 <a href="LINK" data-og-status="todo/pending/done/failed" data-og-infos="{'title':'TITLE', 'description':'DESCRIPTION', 'image':'IMAGE'}"> LINK TEXT</a>
 
 TODO
-- nourrir data-og-infos avec les données
+- améliorer layout de la card
+- ne pas afficher l' ogCard si écran trop petit.
 
 URL OPENGRAPH PREVIEW
 scraping via http://code.ramonkayo.com/simple-scraper/
