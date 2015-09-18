@@ -14,7 +14,7 @@
  | Last modified : 2015-07-08                                                |
  +---------------------------------------------------------------------------+
  */
-use \Exception;
+//use \Exception;
 
 class SimpleScraper {
 	

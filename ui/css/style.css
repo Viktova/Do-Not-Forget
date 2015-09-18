@@ -1487,6 +1487,29 @@ a.facebook-page:hover:before {
 #templates {
   display: none; }
 
+/* OPENGRAPH */
+#og-card {
+  padding: 0px;
+  width: 320px;
+  height: auto;
+  max-height: 150px;
+  overflow: hidden; }
+  #og-card figure {
+    border: 1px solid #DDD; }
+  #og-card img {
+    max-width: 100%;
+    height: auto; }
+  #og-card h4, #og-card p {
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+    word-wrap: break-word;
+    white-space: normal; }
+  #og-card a:hover {
+    text-decoration: none; }
+  #og-card p {
+    font-weight: normal; }
+
 /* LOADING ICON */
 .cloud {
   margin: 0 0 2em;

@@ -11,6 +11,7 @@ var user = {
 	online_save_timer: null,
 	local_save_timer: null,
 	hasChanged: false,
+	current_tab: 'now',
 	should_call_home: false,
 	editors: [],
 	feedback: $('#sync-status-marker'),
@@ -135,7 +136,7 @@ function scrape_url(){
 // get Tag Element at Caret position
 function get_tag_at_caret() {
    var node = document.getSelection().anchorNode;
-   return (node.nodeType == 3 ? node.parentNode : node);
+   return (node.nodeType === 3 ? node.parentNode : node);
 }
 
 // Remove weird Facebook callback token in url #_=_

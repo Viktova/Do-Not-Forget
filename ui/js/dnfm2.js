@@ -13,14 +13,36 @@ urlTip.init();
 *******************************************************/
 
 	// Set Tabs
-	$('#tabs').responsiveTabs({setHash: true});
+	$('#tabs').responsiveTabs({
+		setHash: true, 
+		activate:function(){ 
+			user.current_tab = $(this).find('.r-tabs-state-active a').attr('href');
+			console.log("tab = "+ user.current_tab);
+		}
+	});
 	
 	// Editable zones
 	user.sync_mode = window.synchronization || false;
 	editable = $('.editable');
 	sync_status = $('#sync-status-marker');
 	autolinker = new Autolinker({
-		className: "dnfm-editable-link"
+		className: "dnfm-editable-link",
+		replaceFn : function( autolinker, match ) {
+        	var tag = autolinker.getTagBuilder().build( match );
+        	tag.setAttr('data-og-status','todo');
+			tag.setAttr('data-og-infos','{}');
+/*
+        	console.log('og status value: '+ tag.getAttr('data-og-status'));
+			if(tag.getAttr('data-og-status') === 'undefined'){
+				console.log("ok: adding the status TODO ");
+				
+			}else{
+				console.log("og: STATUS EXISTS!");
+			}
+*/
+
+			return tag;
+    }
 	});
 	// mediumize the editable zones
 	editable.each(function() {
@@ -86,14 +108,16 @@ urlTip.init();
 				// Parse for Urls.
 				//console.log("Caret not on a A: parsing for urls.");
 				// remove previous anchored version of the content
-				$("a", $this).each(function(){
+				$("a[data-og-status!='done']", $this).each(function(){
 					$(this).replaceWith($(this).text().trim());
 				});
 				caret_position = window.rangy.saveSelection();
 
+				// IF TAB != watchlist, make links clicable
+				// if(user.current_tab === '#memo-toreadandwatch') 
+
 				// convert urls to anchors
 				$this.html( autolinker.link( $this.html()) );
-
 				// restore caret position
 				window.rangy.restoreSelection(caret_position);
 			}
@@ -129,13 +153,8 @@ urlTip.init();
 		.on('click.showtip tap.showtip', 'a.dnfm-editable-link', function(e){
 			e.stopPropagation();
 			e.preventDefault();
-			// show the popup
-			var link = $(this).text();
-			var url = link;
-			if (!/^https?:\/\//i.test(url)) {
-				url = 'http://' + url;
-			}
-			urlTip.content('<a href="'+ url +'" target="_blank">'+ link +'</a>');
+			// show the popup			
+			urlTip.content(this);
 			urlTip.show(e.target);
 			return false;
 		});
