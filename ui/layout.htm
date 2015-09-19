@@ -95,15 +95,16 @@ synchronization = true;
 	<script type="text/html" id="template-tips">
 		<div id="url-popup" class="popup">
 			<div id="url-link">link</div>
-			<div id="og-card" class="pure-g">
-				<a id="og-url" href="" target="_blank">
-					<figure class="pure-u-1-4"><img id="og-image"  src="ui/images/ajax-loader.gif"></figure>
-					<div  class="pure-u-3-4">
+			<a id="og-url" href="" target="_blank">
+				<div id="og-card" class="og-left">
+					<figure>
+						<img id="og-image"  src="ui/images/ajax-loader.gif">
+					</figure>
+					<div class="og-right">
             			<h4 id="og-title"></h4>
-						<p id="og-description"></p>
-					</div>
-				</a>    
-			</div>
+					</div>   
+				</div>
+			</a>
 		</div>
 	</script>
 <div id="templates" class="dont-print">
@@ -160,7 +161,7 @@ synchronization = true;
 	
 </div>
 
-<script src="ui/js/min/dnfm2-min.js?v=31"></script>
+<script src="ui/js/min/dnfm2-min.js?v=32"></script>
 <?php
 if (SERVER ==='live'){
 ?>

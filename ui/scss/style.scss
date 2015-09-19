@@ -288,25 +288,41 @@ a.facebook-page{
 #templates{display:none;}
 
 /* OPENGRAPH */
+#url-link{
+	letter-spacing: normal;
+}
 #og-card{
-	padding:0px;
-	width:320px;
+	margin:10px 0 0;
+	max-width:320px;
 	height:auto;
 	max-height:150px;
-	overflow:hidden;
+	position:relative;
+	display:block;
 	figure{
-		border:1px solid #DDD;
+		display: inline-block;
+		margin: 0;
+		margin-right: 15px;
+		overflow: hidden;
+		width: 110px;
+		vertical-align: top;
+	}
+	div.og-right{
+		box-sizing: border-box;
+		display:inline-block;
+		padding-right:10px;
 	}
 	img{
+		border:1px solid #DDD;
 		max-width:100%;
 		height:auto;
 	}
-	h4,p{
+	h4{
 		font-weight:bold;
 		color:#333;
 		text-decoration:none;
-		word-wrap: break-word;
+		margin-top:0;
 		white-space: normal;
+
 	}
 	a:hover{
 		text-decoration: none;

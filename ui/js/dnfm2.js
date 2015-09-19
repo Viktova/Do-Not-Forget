@@ -1,4 +1,4 @@
-// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
+// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_jquery.succinct.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
 
 /* RUNTIME */
 remove_facebook_token_in_url();

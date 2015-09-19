@@ -2,6 +2,7 @@
 
 TODO
 - améliorer layout de la card
+- prévoir si aucune donnée n'est trouvée.
 - ne pas afficher l' ogCard si écran trop petit.
 
 URL OPENGRAPH PREVIEW
