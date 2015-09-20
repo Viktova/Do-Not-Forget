@@ -31,16 +31,6 @@ urlTip.init();
         	var tag = autolinker.getTagBuilder().build( match );
         	tag.setAttr('data-og-status','todo');
 			tag.setAttr('data-og-infos','{}');
-/*
-        	console.log('og status value: '+ tag.getAttr('data-og-status'));
-			if(tag.getAttr('data-og-status') === 'undefined'){
-				console.log("ok: adding the status TODO ");
-				
-			}else{
-				console.log("og: STATUS EXISTS!");
-			}
-*/
-
 			return tag;
     }
 	});
@@ -105,16 +95,14 @@ urlTip.init();
 			var $this = $(this);
 			var tag = get_tag_at_caret();
 			if(tag.nodeName !== 'A'){
-				// Parse for Urls.
-				//console.log("Caret not on a A: parsing for urls.");
+				
+				// *** Parse for Urls.  *** 
+
 				// remove previous anchored version of the content
 				$("a[data-og-status!='done']", $this).each(function(){
 					$(this).replaceWith($(this).text().trim());
 				});
 				caret_position = window.rangy.saveSelection();
-
-				// IF TAB != watchlist, make links clicable
-				// if(user.current_tab === '#memo-toreadandwatch') 
 
 				// convert urls to anchors
 				$this.html( autolinker.link( $this.html()) );
