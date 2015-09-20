@@ -291,14 +291,15 @@ a.facebook-page{
 #url-link{
 	letter-spacing: normal;
 }
+#url-popup{
+	max-width:480px;
+}
 #og-card{
 	margin:10px 0 0;
-	max-width:320px;
 	height:auto;
-	max-height:150px;
 	position:relative;
 	display:block;
-	figure{
+	figure.og-left{
 		display: inline-block;
 		margin: 0;
 		margin-right: 15px;
@@ -309,7 +310,8 @@ a.facebook-page{
 	div.og-right{
 		box-sizing: border-box;
 		display:inline-block;
-		padding-right:10px;
+		padding:0 10px 10px 0px;
+		max-width:340px;
 	}
 	img{
 		border:1px solid #DDD;
@@ -318,16 +320,16 @@ a.facebook-page{
 	}
 	h4{
 		font-weight:bold;
+		width:95%;
 		color:#333;
 		text-decoration:none;
 		margin-top:0;
-		white-space: normal;
+		white-space:normal;
 
 	}
 	a:hover{
 		text-decoration: none;
 	}
-	p{font-weight:normal;}
 }
 
 

@@ -1491,14 +1491,15 @@ a.facebook-page:hover:before {
 #url-link {
   letter-spacing: normal; }
 
+#url-popup {
+  max-width: 480px; }
+
 #og-card {
   margin: 10px 0 0;
-  max-width: 320px;
   height: auto;
-  max-height: 150px;
   position: relative;
   display: block; }
-  #og-card figure {
+  #og-card figure.og-left {
     display: inline-block;
     margin: 0;
     margin-right: 15px;
@@ -1508,21 +1509,21 @@ a.facebook-page:hover:before {
   #og-card div.og-right {
     box-sizing: border-box;
     display: inline-block;
-    padding-right: 10px; }
+    padding: 0 10px 10px 0px;
+    max-width: 340px; }
   #og-card img {
     border: 1px solid #DDD;
     max-width: 100%;
     height: auto; }
   #og-card h4 {
     font-weight: bold;
+    width: 95%;
     color: #333;
     text-decoration: none;
     margin-top: 0;
     white-space: normal; }
   #og-card a:hover {
     text-decoration: none; }
-  #og-card p {
-    font-weight: normal; }
 
 /* LOADING ICON */
 .cloud {
