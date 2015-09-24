@@ -4,6 +4,7 @@ $light-blue: rgb(176, 202, 219);
 $blue: darken($light-blue,25%);
 $dark-blue: #113D5E;
 
+@import 'mixins';
 
 body{font-family:sans-serif; position:relative;}
 
@@ -149,16 +150,19 @@ a.facebook-page{
 	
 	#clear,
 	.button-as-link{
-		 font-size: 80%;
-		 font-weight: 500;
-		padding: 0.4rem 0;
+		font-size: 80%;
+		font-weight: 500;
+		padding: 0.4rem 0 0.4rem 0.4rem;
 		border:none;
 		background: white;
 		color:#CCC;
 		float:right;
+		line-height: 1;
 		vertical-align: baseline;
+		cursor:pointer;
 		&:hover{
 			color:black;
+			text-decoration: none;
 		}
 	}
 	h1 {
@@ -286,6 +290,61 @@ a.facebook-page{
 	display:inline-block;
 }
 #templates{display:none;}
+
+/* Tooltip */
+@import 'pixeline-tip';
+/* OPENGRAPH */
+#url-link{
+	letter-spacing: normal;
+	a{
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display:block;
+	}
+}
+#url-popup{
+	max-width:480px;
+}
+#og-card{
+	margin:10px 0 0;
+	height:auto;
+	position:relative;
+	display:block;
+	figure.og-left{
+		display: inline-block;
+		margin: 0;
+		margin-right: 15px;
+		overflow: hidden;
+		width: 110px;
+		vertical-align: top;
+	}
+	div.og-right{
+		box-sizing: border-box;
+		display:inline-block;
+		padding:0 10px 10px 0px;
+		max-width:340px;
+	}
+	img{
+		border:1px solid #DDD;
+		max-width:100%;
+		height:auto;
+	}
+	h4{
+		font-weight:bold;
+		width:95%;
+		color:#333;
+		text-decoration:none;
+		margin-top:0;
+		white-space:normal;
+
+	}
+	a:hover{
+		text-decoration: none;
+	}
+}
+
+
 /* LOADING ICON */
 .cloud{
   margin: 0 0 2em;
@@ -306,8 +365,7 @@ svg rect,
 svg polygon{
   fill: $blue;
 }
-/* Tooltip */
-@import 'pixeline-tip';
+
 /* Tabs */
 @import 'responsive-tabs';
 
@@ -315,3 +373,4 @@ svg polygon{
 @media print {
 	@import 'print';
 }
+

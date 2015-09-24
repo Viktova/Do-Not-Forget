@@ -1,9 +1,13 @@
-URL PARSING
-nécessaire uniquement lorsque keyup keycode = SPACE, ENTER, PASTE, et sur la dernière partie du contenu ajouté.
-ce sera plus facile de rétablir le curseur ainsi.
+<a href="LINK" data-og-status="todo/pending/done/failed" data-og-infos="{'title':'TITLE', 'description':'DESCRIPTION', 'image':'IMAGE'}"> LINK TEXT</a>
+
+TODO
+- améliorer layout de la card
+- prévoir si aucune donnée n'est trouvée.
+- ne pas afficher l' ogCard si écran trop petit.
 
 URL OPENGRAPH PREVIEW
 scraping via http://code.ramonkayo.com/simple-scraper/
+
 
 ux: une zone "status" à la facebook. Texte avec un url ou url uniquement. Si url, récupérer l'opengraph en ajax, l'afficher en dessous. Permettre de l'effacer.
 

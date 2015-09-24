@@ -38,7 +38,7 @@ $f3->route('GET /',
 		$f3->set('user', $f3->get('SESSION'));
 		$f3->set('content', 'home.htm');
 		$f3->set('menu_active', 'home');
-		
+
 		echo View::instance()->render('layout.htm');
 	}
 );
@@ -47,7 +47,7 @@ $f3->route('POST /synchronise-memo',
 	function($f3) {
 		global $db;
 		// if user EMAIL matches user ID, update its memo
-		
+
 		$username = $f3->get('POST.email');
 		$id = $f3->get('POST.id');
 		$memo = $f3->get('POST.memo');
@@ -74,29 +74,23 @@ $f3->route('POST /synchronise-memo',
 		}
 		echo json_encode($result);
 		exit;
-});
+	});
 
 $f3->route('POST /scrape-url',function($f3){
-	$url = $f3->get('POST.url');
-	require 'classes/SimpleScraper.class.php';
-	$url = isset($url) ? $url : '';
-        try {
-            $scraper = new SimpleScraper($url);
-            $data = $scraper->getAllData();
-            $response = array(
-                'success' => true,
-                'ogp' => $data['ogp'],
-                'dump' => print_r($data, true)
-            );
-        } catch (Exception $e) {
-            $response = array(
-                'success' => false,
-                'message' => 'Something went wrong.',
-                'log' => "$e"
-            );
-        }
-        echo json_encode($response);
-});
+		$url = $f3->get('POST.url');
+		require './classes/SimpleScraper.class.php';
+
+		$url = isset($url) ? $url : '';
+		
+		$scraper = new SimpleScraper($url);
+		$data = $scraper->getAllData();
+		$response = array(
+			'success' => true,
+			'ogp' => $data['ogp'],
+			'dump' => print_r($data, true)
+		);
+		echo json_encode($response);
+	});
 
 $f3->route('GET /tips',
 	function($f3) {
@@ -126,7 +120,7 @@ $f3->route('GET /logout',
 	function($f3) {
 		$f3->clear('SESSION');
 		$f3->reroute('/');
-});
+	});
 
 $f3->route('GET @auth: /auth', function($f3){ require 'controllers/auth.php';});
 $f3->route('GET @auth_action: /auth/@action/*', function($f3){ require 'controllers/auth-action.get.php';});

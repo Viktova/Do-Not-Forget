@@ -7,7 +7,8 @@
 
 <div id="memo-now">
 	<header class="content-subhead ">
-		<input type="button" id="clear" value="Erase" class="dont-print">
+		<a download="memo-now-<?php echo date('d-m-Y-h-i-s'); ?>.html" class="download button-as-link">Download</a>
+		<input type="button" value="Erase" class="erase-button button-as-link dont-print">
 	</header>
 	<section class="post content-editable">
 		<ol class="editable" id="now">
@@ -21,8 +22,8 @@
 
 <div id="memo-later">
 	<header class="content-subhead ">
-		<input type="button" id="clear" value="Erase" class="dont-print">
-	</header>
+		<a download="memo-later-<?php echo date('d-m-Y-h-i-s'); ?>.html" class="download button-as-link">Download</a>
+		<input type="button" value="Erase" class="erase-button button-as-link dont-print">	</header>
 	<section class="post content-editable">
 
 		<ol class="editable" id="later">
@@ -35,8 +36,8 @@
 
 <div id="memo-toreadandwatch">
 	<header class="content-subhead ">
-		<input type="button" id="clear" value="Erase" class="dont-print">
-	</header>
+		<a download="memo-toreadandwatch-<?php echo date('d-m-Y-h-i-s'); ?>.html" class="download button-as-link">Download</a>
+		<input type="button" value="Erase" class="erase-button button-as-link dont-print">	</header>
 	<section class="post content-editable">
 
 		<ol class="editable" id="toreadandwatch">

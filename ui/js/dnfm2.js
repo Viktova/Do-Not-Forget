@@ -1,4 +1,4 @@
-// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
+// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_responsive-tabs.js", "_autolinker.js",  "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js", "_variables.js", "_functions.jquery.js", "_pixeline-tip.js", "_user.js";
 
 /* RUNTIME */
 remove_facebook_token_in_url();
@@ -13,14 +13,25 @@ urlTip.init();
 *******************************************************/
 
 	// Set Tabs
-	$('#tabs').responsiveTabs({setHash: true});
+	$('#tabs').responsiveTabs({
+		setHash: true, 
+		activate:function(){ 
+			user.current_tab = $(this).find('.r-tabs-state-active a').attr('href');
+		}
+	});
 	
 	// Editable zones
 	user.sync_mode = window.synchronization || false;
 	editable = $('.editable');
 	sync_status = $('#sync-status-marker');
 	autolinker = new Autolinker({
-		className: "dnfm-editable-link"
+		className: "dnfm-editable-link",
+		replaceFn : function( autolinker, match ) {
+        	var tag = autolinker.getTagBuilder().build( match );
+        	tag.setAttr('data-og-status','todo');
+			tag.setAttr('data-og-infos','{}');
+			return tag;
+    }
 	});
 	// mediumize the editable zones
 	editable.each(function() {
@@ -62,14 +73,22 @@ urlTip.init();
 		medium.value(autolinker.link(initial_content));
 		user.editors[$this.attr('id')]=medium;
 	});
-/*
-		******************************************************
+
+/*******************************************************
 		BIND EVENTS
-		******************************************************		
-	*/
+*******************************************************/
+	$('.download').on('click', function(){
+		 $(this).attr('href',makeTextFile(user.textFile, editable.html()));
+	});
+	$('.erase-button').on('click',function(){
+		if(confirm("Sure you want to erase all ?")){
+			editable.html('<li>');
+		}
+	});
 	editable
 		.on('keydown', function() {
 			urlTip.hide();
+			user.isEditing = true;
 			clearTimeout(user.local_save_timer);
 			user.feedback.html(user.cloud.savingLocally);
 		})
@@ -78,24 +97,32 @@ urlTip.init();
 			$this.trigger('textchange.parse-url');
 
 		})
-		.on('textchange.parse-url',function(){
+		.on('textchange.parse-url',function(e){
 			
 			var $this = $(this);
-			var tag = get_tag_at_caret();
-			if(tag.nodeName !== 'A'){
-				// Parse for Urls.
-				//console.log("Caret not on a A: parsing for urls.");
-				// remove previous anchored version of the content
-				$("a", $this).each(function(){
-					$(this).replaceWith($(this).text().trim());
-				});
-				caret_position = window.rangy.saveSelection();
+			
+			if(user.isEditing){
+			
+				var tag = get_tag_at_caret();
+				if(tag !== 'A'){
+				
+					// *** Parse for Urls.  *** 
 
-				// convert urls to anchors
-				$this.html( autolinker.link( $this.html()) );
-
-				// restore caret position
-				window.rangy.restoreSelection(caret_position);
+					// remove previous anchored version of the content
+					$("a[data-og-status!='done']", $this).each(function(){
+						$(this).replaceWith($(this).text().trim());
+					});
+					caret_position = window.rangy.saveSelection();
+					// convert urls to anchors
+					$this.html( autolinker.link( $this.html()) );
+					// restore caret position
+					try {
+						window.rangy.restoreSelection(caret_position);
+					}
+					catch(err) {
+						console.log("Rangy error:");
+					}
+				}	
 			}
 		})
 		.on('textchange', function() {
@@ -129,13 +156,8 @@ urlTip.init();
 		.on('click.showtip tap.showtip', 'a.dnfm-editable-link', function(e){
 			e.stopPropagation();
 			e.preventDefault();
-			// show the popup
-			var link = $(this).text();
-			var url = link;
-			if (!/^https?:\/\//i.test(url)) {
-				url = 'http://' + url;
-			}
-			urlTip.content('<a href="'+ url +'" target="_blank">'+ link +'</a>');
+			// show the popup			
+			urlTip.content(this);
 			urlTip.show(e.target);
 			return false;
 		});
@@ -146,6 +168,7 @@ urlTip.init();
 		user.call_home();
 	})
 	.on('click.outside tap.outside', function(){
+		user.isEditing = false;
 		// Close popup on "click outside"
 		urlTip.hide(function(){
 			$(this).trigger('textchange.parse-url');

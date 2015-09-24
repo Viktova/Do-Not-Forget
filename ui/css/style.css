@@ -1,3 +1,14 @@
+/*
+This is a Sass conversion of a lovely mixin which helps you to add depth to elements 
+according to the Google Material Design spec:
+http://www.google.com/design/spec/layout/layout-principles.html#layout-principles-dimensionality
+
+Original article: 
+https://medium.com/@Florian/freebie-google-material-design-shadow-helper-2a0501295a2d
+
+Original Author (LESS): Florian Kutschera (@gefangenimnetz), Conceptboard GmbH (@conceptboardapp)
+Converted (Sass): Tony Montemorano (@allusis)
+*/
 body {
   font-family: sans-serif;
   position: relative; }
@@ -1366,15 +1377,18 @@ a.facebook-page:hover:before {
   .content-subhead .button-as-link {
     font-size: 80%;
     font-weight: 500;
-    padding: 0.4rem 0;
+    padding: 0.4rem 0 0.4rem 0.4rem;
     border: none;
     background: white;
     color: #CCC;
     float: right;
-    vertical-align: baseline; }
+    line-height: 1;
+    vertical-align: baseline;
+    cursor: pointer; }
     .content-subhead #clear:hover,
     .content-subhead .button-as-link:hover {
-      color: black; }
+      color: black;
+      text-decoration: none; }
   .content-subhead h1 {
     text-transform: uppercase;
     color: #aaa;
@@ -1487,6 +1501,78 @@ a.facebook-page:hover:before {
 #templates {
   display: none; }
 
+/* Tooltip */
+.popup {
+  position: absolute;
+  display: none;
+  background-color: #fff;
+  border-radius: 2px;
+  border: 1px solid;
+  border-color: #bbb #bbb #a8a8a8;
+  color: #666;
+  cursor: default;
+  padding: 12px 20px;
+  min-width: 120px;
+  min-height: 40px;
+  width: auto;
+  z-index: 99;
+  white-space: nowrap;
+  display: none;
+  -webkit-transition: all 250ms;
+  -moz-transition: all 250ms;
+  transition: all 250ms;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); }
+  .popup:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    -webkit-transform: translateY(-5px);
+    -moz-transform: translateY(-5px);
+    -ms-transform: translateY(-5px);
+    -o-transform: translateY(-5px);
+    transform: translateY(-5px); }
+
+/* OPENGRAPH */
+#url-link {
+  letter-spacing: normal; }
+  #url-link a {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block; }
+
+#url-popup {
+  max-width: 480px; }
+
+#og-card {
+  margin: 10px 0 0;
+  height: auto;
+  position: relative;
+  display: block; }
+  #og-card figure.og-left {
+    display: inline-block;
+    margin: 0;
+    margin-right: 15px;
+    overflow: hidden;
+    width: 110px;
+    vertical-align: top; }
+  #og-card div.og-right {
+    box-sizing: border-box;
+    display: inline-block;
+    padding: 0 10px 10px 0px;
+    max-width: 340px; }
+  #og-card img {
+    border: 1px solid #DDD;
+    max-width: 100%;
+    height: auto; }
+  #og-card h4 {
+    font-weight: bold;
+    width: 95%;
+    color: #333;
+    text-decoration: none;
+    margin-top: 0;
+    white-space: normal; }
+  #og-card a:hover {
+    text-decoration: none; }
+
 /* LOADING ICON */
 .cloud {
   margin: 0 0 2em;
@@ -1508,28 +1594,6 @@ svg path,
 svg rect,
 svg polygon {
   fill: #588fb3; }
-
-/* Tooltip */
-.popup {
-  position: absolute;
-  display: none;
-  background-color: #fff;
-  border-radius: 2px;
-  border: 1px solid;
-  border-color: #bbb #bbb #a8a8a8;
-  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  -ms-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  color: #666;
-  cursor: default;
-  padding: 12px 20px;
-  min-width: 120px;
-  min-height: 40px;
-  width: auto;
-  z-index: 99;
-  white-space: nowrap;
-  display: none; }
 
 /* Tabs */
 #tabs .r-tabs-nav {
