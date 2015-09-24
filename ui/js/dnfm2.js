@@ -1,4 +1,4 @@
-// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
+// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_responsive-tabs.js", "_autolinker.js",  "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js", "_variables.js", "_functions.jquery.js", "_pixeline-tip.js", "_user.js";
 
 /* RUNTIME */
 remove_facebook_token_in_url();
@@ -73,11 +73,18 @@ urlTip.init();
 		medium.value(autolinker.link(initial_content));
 		user.editors[$this.attr('id')]=medium;
 	});
-/*
-		******************************************************
+
+/*******************************************************
 		BIND EVENTS
-		******************************************************		
-	*/
+*******************************************************/
+	$('.download').on('click', function(){
+		 $(this).attr('href',makeTextFile(user.textFile, editable.html()));
+	});
+	$('.erase-button').on('click',function(){
+		if(confirm("Sure you want to erase all ?")){
+			editable.html('<li>');
+		}
+	});
 	editable
 		.on('keydown', function() {
 			urlTip.hide();
@@ -96,8 +103,8 @@ urlTip.init();
 			
 			if(user.isEditing){
 			
-				//var tag = get_tag_at_caret();
-				// if(tag !== 'A'){
+				var tag = get_tag_at_caret();
+				if(tag !== 'A'){
 				
 					// *** Parse for Urls.  *** 
 
@@ -115,7 +122,7 @@ urlTip.init();
 					catch(err) {
 						console.log("Rangy error:");
 					}
-				//}	
+				}	
 			}
 		})
 		.on('textchange', function() {

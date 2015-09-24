@@ -1377,15 +1377,18 @@ a.facebook-page:hover:before {
   .content-subhead .button-as-link {
     font-size: 80%;
     font-weight: 500;
-    padding: 0.4rem 0;
+    padding: 0.4rem 0 0.4rem 0.4rem;
     border: none;
     background: white;
     color: #CCC;
     float: right;
-    vertical-align: baseline; }
+    line-height: 1;
+    vertical-align: baseline;
+    cursor: pointer; }
     .content-subhead #clear:hover,
     .content-subhead .button-as-link:hover {
-      color: black; }
+      color: black;
+      text-decoration: none; }
   .content-subhead h1 {
     text-transform: uppercase;
     color: #aaa;
@@ -1530,6 +1533,11 @@ a.facebook-page:hover:before {
 /* OPENGRAPH */
 #url-link {
   letter-spacing: normal; }
+  #url-link a {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block; }
 
 #url-popup {
   max-width: 480px; }

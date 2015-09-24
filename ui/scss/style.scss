@@ -150,16 +150,19 @@ a.facebook-page{
 	
 	#clear,
 	.button-as-link{
-		 font-size: 80%;
-		 font-weight: 500;
-		padding: 0.4rem 0;
+		font-size: 80%;
+		font-weight: 500;
+		padding: 0.4rem 0 0.4rem 0.4rem;
 		border:none;
 		background: white;
 		color:#CCC;
 		float:right;
+		line-height: 1;
 		vertical-align: baseline;
+		cursor:pointer;
 		&:hover{
 			color:black;
+			text-decoration: none;
 		}
 	}
 	h1 {
@@ -293,6 +296,12 @@ a.facebook-page{
 /* OPENGRAPH */
 #url-link{
 	letter-spacing: normal;
+	a{
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display:block;
+	}
 }
 #url-popup{
 	max-width:480px;

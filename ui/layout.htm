@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Do Not Forget Me</title>
   <base href="<?php echo $SCHEME.'://'.$HOST.':'.$PORT.$BASE.'/'; ?>" />
-  <meta name="description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting (but you could try).">
-  <link href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgUlEQVR4AWPgs471ErSNfSxoG/efFAzSA9LLQJ5mhCEMIAYlGG4AAYDfAGKxV07r/49fvoJo0g3wBmr69v0HyDEgGsQn6AVMzQgAdglhF2BqxnQBBZpxeoFYzfhd8PPXbzyaCRtASDNuL8D4//79A3HBLtENKcSfkCjBFGcmirMzABzRKoaQg+KfAAAAAElFTkSuQmCC" rel="icon" type="image/x-icon" />
-
+  <meta name="description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting.">
 	<meta property="og:title" content="Do Not Forget Me - Single page note-taking for lists, reminders, to-dos. And sexting.">
 	<meta property="og:site_name" content="Do Not Forget Me">
 	<meta property="og:image" content="<?php echo $SCHEME.'://'.$HOST.'/'; ?>ui/images/facebook-1024x1024.png">
@@ -16,8 +14,8 @@
 	<meta property="og:url" content="http://do-not-forget.me">
 	<meta property="og:description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting.">
 	<meta property="og:type" content="article">
-
-  <link rel="stylesheet" href="ui/css/style.css?v=30">
+	<?php include('fragments/favicons.inc.php'); ?>
+  <link rel="stylesheet" href="ui/css/style.css?v=33">
 <script>
 var synchronization = false;
 </script>
@@ -161,7 +159,7 @@ synchronization = true;
 	
 </div>
 
-<script src="ui/js/min/dnfm2-min.js?v=34"></script>
+<script src="ui/js/min/dnfm2-min.js?v=342"></script>
 <?php
 if (SERVER ==='live'){
 ?>

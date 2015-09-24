@@ -78,7 +78,7 @@ Tip.prototype = {
 				image: $this.data('og-infos').image
 			}
 			that.opengraph(og_data);
-		} else if ($this.attr('data-og-status') === 'todo') {
+		} else {
 			// fetch data
 			// 
 			console.log("fetching url:" + url);
