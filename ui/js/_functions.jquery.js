@@ -11,6 +11,7 @@ var user = {
 	online_save_timer: null,
 	local_save_timer: null,
 	hasChanged: false,
+	isEditing: false,
 	current_tab: 'now',
 	should_call_home: false,
 	editors: [],
@@ -50,7 +51,7 @@ var user = {
 				}
 			};
 				user.feedback.html(user.cloud.loading);
-				var jqxhr = $.post('/synchronise-memo', data, function(result) {
+				$.post('/synchronise-memo', data, function(result) {
 					user.remote_last_modified = result.last_modified;
 					if (result.memo) {
 						//console.log("PUSH: Local content is rotten. Pushing new content from Server!");
@@ -64,7 +65,7 @@ var user = {
 								caret_position = window.rangy.saveSelection();
 								user.editors[key].value(memos[key]);
 								window.rangy.restoreSelection(window.caret_position);
-							};
+							}
 						}
 						user.feedback.html(user.cloud.refreshed);
 					} else {
@@ -110,33 +111,18 @@ var user = {
 	}
 };
 
-
-function scrape_url(){
-	// see http://code.ramonkayo.com/simple-scraper/
-	
-	$.post('/scrape-url', {'url' : $('#url').val()},
-		function(json) {
-			if (json.success) {
-				$('#title').text(json.ogp.title);
-				$('#title').attr('href', json.ogp.url);
-				$('#description').text(json.ogp.description);
-				$('#image').attr('src', json.ogp.image);
-				$('#dump').text(json.dump);
-			} else {
-                console.log('SCraping did not work!');
-                console.log(json.log);
-           	}
-        },
-        'json'
-        );
-}
 /*********************************************************
 	 HELPER FUNCTIONS 
 *********************************************************/
 // get Tag Element at Caret position
 function get_tag_at_caret() {
-   var node = document.getSelection().anchorNode;
-   return (node.nodeType === 3 ? node.parentNode : node);
+	try {
+	   var node = document.getSelection().anchorNode;
+	   node= (node.nodeType === 3 ? node.parentNode : node);
+	   return node.nodeName;	
+	}catch(err){
+		console.log(err);
+	}
 }
 
 // Remove weird Facebook callback token in url #_=_

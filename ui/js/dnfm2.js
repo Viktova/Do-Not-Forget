@@ -1,4 +1,4 @@
-// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_jquery.succinct.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
+// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_variables.js", "_functions.jquery.js", "_responsive-tabs.js", "_autolinker.js", "_pixeline-tip.js", "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js";
 
 /* RUNTIME */
 remove_facebook_token_in_url();
@@ -17,7 +17,6 @@ urlTip.init();
 		setHash: true, 
 		activate:function(){ 
 			user.current_tab = $(this).find('.r-tabs-state-active a').attr('href');
-			console.log("tab = "+ user.current_tab);
 		}
 	});
 	
@@ -82,6 +81,7 @@ urlTip.init();
 	editable
 		.on('keydown', function() {
 			urlTip.hide();
+			user.isEditing = true;
 			clearTimeout(user.local_save_timer);
 			user.feedback.html(user.cloud.savingLocally);
 		})
@@ -90,24 +90,32 @@ urlTip.init();
 			$this.trigger('textchange.parse-url');
 
 		})
-		.on('textchange.parse-url',function(){
+		.on('textchange.parse-url',function(e){
 			
 			var $this = $(this);
-			var tag = get_tag_at_caret();
-			if(tag.nodeName !== 'A'){
+			
+			if(user.isEditing){
+			
+				//var tag = get_tag_at_caret();
+				// if(tag !== 'A'){
 				
-				// *** Parse for Urls.  *** 
+					// *** Parse for Urls.  *** 
 
-				// remove previous anchored version of the content
-				$("a[data-og-status!='done']", $this).each(function(){
-					$(this).replaceWith($(this).text().trim());
-				});
-				caret_position = window.rangy.saveSelection();
-
-				// convert urls to anchors
-				$this.html( autolinker.link( $this.html()) );
-				// restore caret position
-				window.rangy.restoreSelection(caret_position);
+					// remove previous anchored version of the content
+					$("a[data-og-status!='done']", $this).each(function(){
+						$(this).replaceWith($(this).text().trim());
+					});
+					caret_position = window.rangy.saveSelection();
+					// convert urls to anchors
+					$this.html( autolinker.link( $this.html()) );
+					// restore caret position
+					try {
+						window.rangy.restoreSelection(caret_position);
+					}
+					catch(err) {
+						console.log("Rangy error:");
+					}
+				//}	
 			}
 		})
 		.on('textchange', function() {
@@ -153,6 +161,7 @@ urlTip.init();
 		user.call_home();
 	})
 	.on('click.outside tap.outside', function(){
+		user.isEditing = false;
 		// Close popup on "click outside"
 		urlTip.hide(function(){
 			$(this).trigger('textchange.parse-url');

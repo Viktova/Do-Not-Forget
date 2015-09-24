@@ -40,15 +40,21 @@ Tip.prototype = {
 		}
 	},
 	opengraph: function(ogp) {
-		if (ogp === 'reset') {
+		if (ogp === 'failed') {
+			console.log('og: failed :( ');
+			this.og.htitle.text('This page has no opengraph metadata.');
+			this.og.link2.attr('href', '');
+			this.og.image.attr('src', '');
+			this.og.el.addClass('hidden');
+		} else if (ogp === 'reset') {
 			this.og.htitle.text('');
 			this.og.link2.attr('href', '');
-			this.og.link.find('a').text('');
 			this.og.image.attr('src', 'ui/images/ajax-loader.gif');
+			this.og.el.removeClass('hidden');
 		} else {
+			this.og.el.removeClass('hidden');
 			this.og.htitle.text(ogp.title);//.succinct({size: 320});
 			this.og.link2.attr('href', ogp.link);
-			this.og.link.find('a').text(ogp.title).succinct({size: 60});
 			this.og.image.attr('src', ogp.image);
 		}
 	},
@@ -81,19 +87,30 @@ Tip.prototype = {
 				'url': url
 			}, function(json) {
 				if (json.success) {
-					$this.attr('data-og-status', 'done');
-					og_data = {
+					console.log("OG PARSING SUCCESS");
+					if(typeof(json.ogp.image) !== 'undefined'){
+						console.log("OG Image found.");
+						og_data = {
 						title: json.ogp.title,
 						image: json.ogp.image,
 						link: json.ogp.url
 					};
-					$this.attr('data-og-infos', JSON.stringify(og_data));
-					that.opengraph(og_data);
-					console.log("OG PARSING SUCCESS");
+						$this.attr('data-og-status', 'done');
+						$this.attr('data-og-infos', JSON.stringify(og_data));
+						that.opengraph(og_data);
+					}else{
+						console.log("No OG Image found.");
+						$this.attr('data-og-status', 'todo');
+						that.opengraph('failed');
+					}
+					
+					
 					//
 				} else {
+					$this.attr('data-og-status', 'todo');
 					console.log('OG PARSING ERROR ! Something went wrong.');
 					console.log(json.log);
+					that.opengraph('failed');
 				}
 			}, 'json');
 		}

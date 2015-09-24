@@ -4,6 +4,7 @@ $light-blue: rgb(176, 202, 219);
 $blue: darken($light-blue,25%);
 $dark-blue: #113D5E;
 
+@import 'mixins';
 
 body{font-family:sans-serif; position:relative;}
 
@@ -287,6 +288,8 @@ a.facebook-page{
 }
 #templates{display:none;}
 
+/* Tooltip */
+@import 'pixeline-tip';
 /* OPENGRAPH */
 #url-link{
 	letter-spacing: normal;
@@ -353,8 +356,7 @@ svg rect,
 svg polygon{
   fill: $blue;
 }
-/* Tooltip */
-@import 'pixeline-tip';
+
 /* Tabs */
 @import 'responsive-tabs';
 
