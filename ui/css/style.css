@@ -1370,22 +1370,24 @@ a.facebook-page:hover:before {
     color: #CCC;
     margin-right: 1em; }
 
+.separator {
+  font-weight: 100;
+  color: #DDD;
+  padding-left: 1em;
+  padding-right: 1em; }
+
 .content-subhead {
   overflow: hidden;
-  line-height: 1; }
-  .content-subhead #clear,
+  line-height: 1;
+  text-align: right; }
   .content-subhead .button-as-link {
     font-size: 80%;
     font-weight: 500;
     padding: 0.4rem 0 0.4rem 0.4rem;
-    border: none;
     background: white;
     color: #CCC;
-    float: right;
     line-height: 1;
-    vertical-align: baseline;
     cursor: pointer; }
-    .content-subhead #clear:hover,
     .content-subhead .button-as-link:hover {
       color: black;
       text-decoration: none; }

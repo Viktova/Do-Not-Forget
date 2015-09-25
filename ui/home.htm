@@ -1,4 +1,11 @@
-<div id="tabs">
+	<header class="content-subhead pure-menu pure-menu-horizontal">
+		<ul class="pure-menu-list">
+			<li class="pure-menu-item"><a download="memo-<?php echo date('d-m-Y-h-i-s'); ?>.html" class="download button-as-link pure-menu-link" title="Download your memos as a file">Download</a></li>
+			<li class="pure-menu-item"><span class="separator">|</span></li>
+			<li class="pure-menu-item"><a title="Erase all your memos" class="erase-button button-as-link pure-menu-link">Erase</a></li>
+		</ul>		
+	</header>
+	<div id="tabs">
 <ul>
 	<li><a href="#memo-now">Today</a></li>
 	<li><a href="#memo-later">Later</a></li>
@@ -6,12 +13,8 @@
 </ul>
 
 <div id="memo-now">
-	<header class="content-subhead ">
-		<a download="memo-now-<?php echo date('d-m-Y-h-i-s'); ?>.html" class="download button-as-link">Download</a>
-		<input type="button" value="Erase" class="erase-button button-as-link dont-print">
-	</header>
 	<section class="post content-editable">
-		<ol class="editable" id="now">
+		<ol class="editable" id="now" title="Today">
 			<li>Whatever you write here will be saved in your browser's local memory storage.</li>
 			<li>Keep this page opened in a tab at all time; it's especially useful for reminders, to-do lists, anything you mind comes up with that has potential value.</li>
 			<li>Go ahead, replace this text with whatever you should not forget.</li>
@@ -21,12 +24,9 @@
 </div>
 
 <div id="memo-later">
-	<header class="content-subhead ">
-		<a download="memo-later-<?php echo date('d-m-Y-h-i-s'); ?>.html" class="download button-as-link">Download</a>
-		<input type="button" value="Erase" class="erase-button button-as-link dont-print">	</header>
 	<section class="post content-editable">
 
-		<ol class="editable" id="later">
+		<ol class="editable" id="later"  title="Later">
 			<li>Things you should do.... soon.</li>
 		</ol>
 	
@@ -35,12 +35,9 @@
 </div>
 
 <div id="memo-toreadandwatch">
-	<header class="content-subhead ">
-		<a download="memo-toreadandwatch-<?php echo date('d-m-Y-h-i-s'); ?>.html" class="download button-as-link">Download</a>
-		<input type="button" value="Erase" class="erase-button button-as-link dont-print">	</header>
 	<section class="post content-editable">
 
-		<ol class="editable" id="toreadandwatch">
+		<ol class="editable" id="toreadandwatch"  title="To Read/ To watch">
 			<li>Things you should watch or read, later on.</li>
 		</ol>
 	

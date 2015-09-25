@@ -144,21 +144,23 @@ a.facebook-page{
 	}
 	
 }
+.separator{
+	font-weight: 100;
+	color: #DDD;
+	padding-left:1em;
+	padding-right:1em;	
+}
 .content-subhead{
 	overflow: hidden;
 	line-height:1;
-	
-	#clear,
+	text-align: right;
 	.button-as-link{
 		font-size: 80%;
 		font-weight: 500;
 		padding: 0.4rem 0 0.4rem 0.4rem;
-		border:none;
 		background: white;
 		color:#CCC;
-		float:right;
 		line-height: 1;
-		vertical-align: baseline;
 		cursor:pointer;
 		&:hover{
 			color:black;

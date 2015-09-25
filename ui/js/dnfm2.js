@@ -78,10 +78,16 @@ urlTip.init();
 		BIND EVENTS
 *******************************************************/
 	$('.download').on('click', function(){
-		 $(this).attr('href',makeTextFile(user.textFile, editable.html()));
+		var content = '';
+		editable.each(function(){
+			content += '<h2>'+$(this).attr('title') + '</h2>';
+			content += $(this).html() + '<hr>';
+		});
+		content +='Thank you for using <a href="http://do-not-forget.me/">http://do-not-forget.me/</a>!';
+		 $(this).attr('href',makeTextFile(user.textFile, content ));
 	});
 	$('.erase-button').on('click',function(){
-		if(confirm("Sure you want to erase all ?")){
+		if(confirm("Sure you want to erase all your memos ?")){
 			editable.html('<li>');
 		}
 	});
