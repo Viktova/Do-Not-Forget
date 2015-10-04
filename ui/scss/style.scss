@@ -36,8 +36,7 @@ h3 {
 }
 
 #layout {
-    padding: 0;
-	
+    padding: 0;	
 }
 
 .header {
@@ -51,14 +50,11 @@ h3 {
 		color: $blue;
 	}
 }
-
 .sidebar {
     background: $dark-blue;
     color: #fff;
     position:relative;
     #credits{
-		position:absolute;
-		bottom:0;
 		width:100%;
 		text-align: left;
 		opacity:.5;
@@ -217,7 +213,12 @@ a.facebook-page{
         bottom: 0;
     }
 }    
-
+@media (min-height: 42em) {
+	.sidebar #credits{
+		position:absolute;
+		bottom:0;		
+	}
+}
 [contenteditable="true"]:hover, [contenteditable="true"]:focus {
 	background:#f8f6f2;
 	border:1px dotted #FFFFEE;
