@@ -78,7 +78,7 @@ urlTip.init();
 		BIND EVENTS
 *******************************************************/
 	$('.download').on('click', function(){
-		var content = '';
+		var content = '\ufeff';
 		editable.each(function(){
 			content += '<h2>'+$(this).attr('title') + '</h2>';
 			content += $(this).html() + '<hr>';
