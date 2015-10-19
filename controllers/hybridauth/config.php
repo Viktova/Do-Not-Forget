@@ -1,16 +1,17 @@
 <?php
 
 /**
- * HybridAuth
- * http://hybridauth.sourceforge.net | http://github.com/hybridauth/hybridauth
- * (c) 2009-2015, HybridAuth authors | http://hybridauth.sourceforge.net/licenses.html
- */
-// ----------------------------------------------------------------------------------------
-// HybridAuth Config file: http://hybridauth.sourceforge.net/userguide/Configuration.html
-// ----------------------------------------------------------------------------------------
 
+Facebook app:
+https://developers.facebook.com/apps/1489571924669594/dashboard/
+
+google app:
+https://console.developers.google.com/project/do-not-forget-1039/apiui/credential?clientType#
+
+
+ */
 return array(
-	"base_url" => WWWROOT."/auth/",
+	"base_url" => WWWROOT."/auth",
 	"providers" => array(
 
 		"Google" => array(
