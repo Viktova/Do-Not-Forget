@@ -43,6 +43,15 @@ $f3->route('GET /',
 	}
 );
 
+$f3->route('GET /offline.html',
+	function($f3) {
+		$f3->set('content', 'home.htm');
+		$f3->set('menu_active', 'home');
+
+		echo View::instance()->render('layout.htm');
+	}
+);
+
 $f3->route('POST /synchronise-memo',
 	function($f3) {
 		global $db;
@@ -124,10 +133,6 @@ $f3->route('GET /logout',
 
 $f3->route('GET @auth: /auth', function($f3){
 		require 'controllers/hybridauth/index.php';
-
 	});
-
-//$f3->route('GET @auth_action: /auth/@action/*', function($f3){ require 'controllers/auth-action.get.php';});
 $f3->route('GET @auth_action: /auth/@action', function($f3){ require 'controllers/auth-action.get.php';});
-
 $f3->run();

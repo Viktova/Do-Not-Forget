@@ -51,7 +51,7 @@ return array(
 			"keys" => array("id" => "cebdcbbd808c4787615a", "secret" => "c869dd5724db84992ee12c810c189bd512aa3e24"),
 		)
 	),
-	"debug_mode" => true,
+	"debug_mode" => 'error',
 	// Path to file writable by the web server. Required if 'debug_mode' is not false
 	"debug_file" => "hybridauth-log.txt",
 );

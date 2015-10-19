@@ -12,7 +12,9 @@
 <link rel="icon" type="image/png" href="ui/images/icons/favicon-96x96.png" sizes="96x96">
 <link rel="icon" type="image/png" href="ui/images/icons/favicon-16x16.png" sizes="16x16">
 <link rel="manifest" href="ui/images/icons/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Do Not Forget">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Do Not Forget">
 <meta name="msapplication-TileColor" content="#113d5e">
 <meta name="msapplication-TileImage" content="ui/images/icons/mstile-144x144.png">

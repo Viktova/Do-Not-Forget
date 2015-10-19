@@ -1,7 +1,12 @@
-// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_jquery.ontextchange.js", "_responsive-tabs.js", "_autolinker.js",  "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js", "_variables.js", "_functions.jquery.js", "_pixeline-tip.js", "_user.js";
+// @codekit-prepend "_jquery-2.1.4.min.js", "_jquery.mobile-events.js", "_addtohomescreen.js", "_jquery.ontextchange.js", "_responsive-tabs.js", "_autolinker.js",  "medium-dependencies/_rangy-core.js", "medium-dependencies/_rangy-classapplier.js", "medium-dependencies/_rangy-selectionsaverestore.js", "medium-dependencies/_undo.js", "_medium.js", "_variables.js", "_functions.jquery.js", "_pixeline-tip.js", "_user.js";
 
 /* RUNTIME */
 remove_facebook_token_in_url();
+
+addToHomescreen({
+   skipFirstVisit: true,
+   maxDisplayCount: 1
+});
 
 urlTip = new Tip(); 
 urlTip.init();
