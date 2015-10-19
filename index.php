@@ -1,5 +1,8 @@
 <?php
 require 'config.inc.php';
+
+
+
 // Kickstart the framework
 $f3=require('lib/base.php');
 
@@ -10,10 +13,7 @@ if ((float)PCRE_VERSION<7.9)
 // Load configuration
 $f3->config('config.ini');
 
-
-/* OPAUTH */
-define('OPAUTH_LIB_DIR', dirname(__FILE__).'/controllers/opauth/');
-define('CONF_FILE', dirname(__FILE__).'/controllers/opauth/opauth.conf.php');
+/* HYBRIDAUTH */
 
 
 $db=new DB\SQL(
@@ -81,7 +81,7 @@ $f3->route('POST /scrape-url',function($f3){
 		require './classes/SimpleScraper.class.php';
 
 		$url = isset($url) ? $url : '';
-		
+
 		$scraper = new SimpleScraper($url);
 		$data = $scraper->getAllData();
 		$response = array(
@@ -122,8 +122,12 @@ $f3->route('GET /logout',
 		$f3->reroute('/');
 	});
 
-$f3->route('GET @auth: /auth', function($f3){ require 'controllers/auth.php';});
-$f3->route('GET @auth_action: /auth/@action/*', function($f3){ require 'controllers/auth-action.get.php';});
+$f3->route('GET @auth: /auth', function($f3){
+		require 'controllers/hybridauth/index.php';
+
+	});
+
+//$f3->route('GET @auth_action: /auth/@action/*', function($f3){ require 'controllers/auth-action.get.php';});
 $f3->route('GET @auth_action: /auth/@action', function($f3){ require 'controllers/auth-action.get.php';});
 
 $f3->run();

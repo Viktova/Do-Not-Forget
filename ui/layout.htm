@@ -66,7 +66,7 @@ synchronization = true;
 <?php
 }else{
 	?>
-	<p>Login via your <a href="/auth/facebook<?php if (SERVER == 'dev'){ echo "-test";}?>">Facebook</a>, <a href="/auth/google">Google</a> or <a href="/auth/github">Github</a> account to keep these notes synced on all your browsers.</p>
+	<p>Login via your <a href="/auth/facebook">Facebook</a>, <a href="/auth/google">Google</a>, <a href="/auth/twitter">Twitter</a> or <a href="/auth/github">Github</a> account to keep these notes synced on all your browsers.</p>
 <p class="user-details">
 	<span id="sync-status-marker" class="sync-status"></span>
 </p>
@@ -163,17 +163,10 @@ synchronization = true;
 	</div>
 	
 </div>
-<script src="/upup.min.js"></script>
-<script>
-  UpUp.start({
-	  'content': 'Cannot reach site. Please check your internet connection.',
-	  'assets': [                 
-	  	'ui/css/style.css',
-	  	'ui/js/min/dnfm2-min.js'
-	  ]
-  });
-</script>
-<script src="ui/js/min/dnfm2-min.js?v=345"></script>
+<?php
+ // include('ui/fragments/upup-js.inc.php');
+?>
+<script src="ui/js/min/dnfm2-min.js?v=346"></script>
 <?php
 if (SERVER ==='live'){
 ?>
