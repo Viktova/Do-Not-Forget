@@ -142,8 +142,16 @@ urlTip.init();
 			// SAVE
 			// Save Offline
 			localStorage.setItem(localstorage_var_name+"-"+this_id, $this.html());
+/*
 			var d = new Date();
-			user.last_modified = d.toISOString().substring(0, 19).replace('T', ' ') ;
+			var UTCDate = new Date();
+			UTCDate.setTime(d.getTime()+d.getTimezoneOffset()*60000);
+*/
+
+			var now = new Date;
+			var utc_timestamp = Date.UTC(now.getUTCFullYear(),now.getUTCMonth(), now.getUTCDate() , now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+			utc_timestamp = new Date(utc_timestamp);
+			user.last_modified = utc_timestamp.toISOString().substring(0, 19).replace('T', ' ') ;
 			localStorage.setItem('localLastModified', user.last_modified );
 			user.hasChanged = true;
 			
