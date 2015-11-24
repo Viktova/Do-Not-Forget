@@ -34,7 +34,9 @@ return array(
 
 		"Facebook" => array(
 			"enabled" => true,
-			"keys" => array("id" => "1489571924669594", "secret" => "9cd355b06bb00c6a7e7db9856218b4c5"),
+			//"keys" => array("id" => "1489571924669594", "secret" => "9cd355b06bb00c6a7e7db9856218b4c5"), // LIVE
+			"keys" => array("id" => "1489838384642948", "secret" => "e138c8ad4e30d4c312642136eb6ef226"), // DEV
+
 			"scope" => "email",
 			"trustForwarded" => false
 		),
