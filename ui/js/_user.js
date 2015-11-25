@@ -28,8 +28,10 @@ var user = {
 	},
 	init: function() {
 		// things to do only once, when page is loaded.
-		if ($('#user_memo').length && $('#user_memo').val().replace(/\s/g,"") !== "") {
-			user.memo = JSON.parse($('#user_memo').val());
+		var str = $('#user_memo').val();
+		if ($('#user_memo').length && str !== "") {
+			console.log(str);
+			user.memo = JSON.parse(str);
 		}
 	},
 	sync: function() {
