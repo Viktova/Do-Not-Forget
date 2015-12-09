@@ -30,7 +30,6 @@ var user = {
 		// things to do only once, when page is loaded.
 		var str = $('#user_memo').val();
 		if ($('#user_memo').length && str !== "") {
-			console.log(str);
 			user.memo = JSON.parse(str);
 		}
 	},

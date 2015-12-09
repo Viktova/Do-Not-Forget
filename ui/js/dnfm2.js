@@ -62,10 +62,10 @@ urlTip.init();
 					initial_content = localStorage.getItem(this_var_name);
 		}
 		if (synchronization) {
-			console.log(" user.memo." + this_var_name + " = " + user.memo[$this.attr('id')]);
+			//console.log(" user.memo." + this_var_name + " = " + user.memo[$this.attr('id')]);
 //			if (new Date(localStorage.localLastModified) < new Date(user.remote_last_modified)) {
 			if(user.remote_last_modified > localStorage.localLastModified){				
-				console.log("copie locale pourrie pour "+ this_var_name +", on l'écrase....");
+				//console.log("copie locale pourrie pour "+ this_var_name +", on l'écrase....");
 				initial_content = user.memo[$this.attr('id')];
 				localStorage.setItem(this_var_name, initial_content);
 			}

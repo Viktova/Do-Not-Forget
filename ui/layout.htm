@@ -1,10 +1,11 @@
+<?php  $version = 999 ; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset=utf-8>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Do Not Forget Me</title>
-  <base href="<?php echo $SCHEME.'://'.$HOST.':'.$PORT.$BASE.'/'; ?>" />
+  <base href="<?php echo $SCHEME.'://'.$HOST.'/'; ?>" />
   <meta name="google-site-verification" content="7bMQ4sD6_m1GydAuAw3cLVFcNZH0nXfa3u9e9twR1J8" />
   <meta name="description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting.">
 	<meta property="og:title" content="Do Not Forget Me - Single page note-taking for lists, reminders, to-dos. And sexting.">
@@ -16,7 +17,7 @@
 	<meta property="og:description" content="Dead simple and free note taking in your browser - great for lists, reminders, to-dos. Not so much for sexting.">
 	<meta property="og:type" content="article">
 	<?php include('fragments/favicons.inc.php'); ?>
-  <link rel="stylesheet" href="ui/css/style.css?v=354">
+  <link rel="stylesheet" href="ui/css/style.css?v=<?php echo $version ?>">
 <script>
 var synchronization = false;
 </script>
@@ -37,7 +38,7 @@ synchronization = true;
 </script>
 <input type="hidden" id="user_id" name="userid" value="<?php echo $user['id'];?>">
 <input type="hidden" id="user_email" name="email" value="<?php echo $user['email'];?>">
-<input type="hidden" id="user_memo" name="memo" value="<?php echo nl2br($user['memo']);?>">
+<input type="hidden" id="user_memo" name="memo" value="<?php echo json_encode(nl2br($user['memo']));?>">
 <input type="hidden" id="user_last_modified" name="last_modified" value="<?php echo $user['last_modified'];?>">
 
 
@@ -164,7 +165,7 @@ synchronization = true;
 	
 </div>
 
-<script src="ui/js/min/dnfm2-min.js?v=3591"></script>
+<script src="ui/js/min/dnfm2-min.js?v=<?php echo $version ?>"></script>
 <?php
 if (SERVER ==='live'){
 ?>
