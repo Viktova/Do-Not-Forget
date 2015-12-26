@@ -1,4 +1,4 @@
-<?php  $version = 999 ; ?>
+<?php  $version = 8 ; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,10 +35,21 @@ if($user['logged_in']==='ok'){
 ?>
 <script>
 synchronization = true;
+<?php
+function removeslashes($string)
+{
+    $string=implode("",explode("\\",$string));
+    return stripslashes(trim($string));
+}
+// utf8_encode(addslashes( htmlentities(nl2br(
+
+$my_memo = removeslashes($user['memo']);
+$my_memo=  str_ireplace("'",  "&apos;", $my_memo);
+?>
+var my_memo = '<?php echo json_encode($my_memo);?>';
 </script>
 <input type="hidden" id="user_id" name="userid" value="<?php echo $user['id'];?>">
 <input type="hidden" id="user_email" name="email" value="<?php echo $user['email'];?>">
-<input type="hidden" id="user_memo" name="memo" value="<?php echo json_encode(nl2br($user['memo']));?>">
 <input type="hidden" id="user_last_modified" name="last_modified" value="<?php echo $user['last_modified'];?>">
 
 

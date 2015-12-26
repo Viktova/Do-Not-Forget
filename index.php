@@ -13,9 +13,6 @@ if ((float)PCRE_VERSION<7.9)
 // Load configuration
 $f3->config('config.ini');
 
-/* HYBRIDAUTH */
-
-
 $db=new DB\SQL(
 	'mysql:host='.DB_HOST.';port=3306;dbname='.DB_NAME,
 	DB_USER,
@@ -42,6 +39,7 @@ $f3->route('GET /',
 		echo View::instance()->render('layout.htm');
 	}
 );
+/*
 
 $f3->route('GET /offline.html',
 	function($f3) {
@@ -51,6 +49,7 @@ $f3->route('GET /offline.html',
 		echo View::instance()->render('layout.htm');
 	}
 );
+*/
 
 $f3->route('POST /synchronise-memo',
 	function($f3) {

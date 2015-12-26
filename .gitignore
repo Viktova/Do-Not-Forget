@@ -4,3 +4,5 @@ config.inc.php
 *.scssc
 
 *.codekit
+
+*.codekit

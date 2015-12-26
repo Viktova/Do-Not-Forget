@@ -28,8 +28,9 @@ var user = {
 	},
 	init: function() {
 		// things to do only once, when page is loaded.
-		var str = $('#user_memo').val();
-		if ($('#user_memo').length && str !== "") {
+		//var str = $('#user_memo').val();
+		var str = my_memo;
+		if (str !== '') {
 			user.memo = JSON.parse(str);
 		}
 	},
