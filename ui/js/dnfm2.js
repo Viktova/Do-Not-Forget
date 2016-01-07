@@ -69,18 +69,17 @@ urlTip.init();
 					initial_content = localStorage.getItem(this_var_name);
 		}
 		if (synchronization) {
-			//console.log(" user.memo." + this_var_name + " = " + user.memo[$this.attr('id')]);
-//			if (new Date(localStorage.localLastModified) < new Date(user.remote_last_modified)) {
 			if(user.remote_last_modified > localStorage.localLastModified){				
 				//console.log("copie locale pourrie pour "+ this_var_name +", on l'écrase....");
 				initial_content = user.memo[$this.attr('id')];
 				localStorage.setItem(this_var_name, initial_content);
 			}
 		}
+		localStorage.setItem(this_var_name, initial_content);
+
 		// set editors' initial content
 		medium.value(autolinker.link(initial_content));
 		user.editors[$this.attr('id')] = medium;
-		localStorage.setItem(this_var_name, initial_content);
 	});
 /*******************************************************
 		BIND EVENTS

@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="ui/css/style.css?v=<?php echo $version ?>">
 <script>
 var synchronization = false;
+var my_memo = '';
 </script>
 </head>
 <body id="dnfm">
@@ -46,7 +47,7 @@ function removeslashes($string)
 $my_memo = removeslashes($user['memo']);
 $my_memo=  str_ireplace("'",  "&apos;", $my_memo);
 ?>
-var my_memo = '<?php echo json_encode($my_memo);?>';
+my_memo = '<?php echo json_encode($my_memo);?>';
 </script>
 <input type="hidden" id="user_id" name="userid" value="<?php echo $user['id'];?>">
 <input type="hidden" id="user_email" name="email" value="<?php echo $user['email'];?>">

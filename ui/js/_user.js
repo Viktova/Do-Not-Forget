@@ -64,7 +64,7 @@ var user = {
 				user.remote_last_modified = result.last_modified;
 				var sync_direction = 'push';
 				if (result.memo) {
-					console.log("PUSH: Local content is rotten. Pushing new content from Server!");
+					//console.log("PUSH: Local content is rotten. Pushing new content from Server!");
 					// update local state with remote data (PUSH)
 					// break memo into the X memotabs data and localSTorage them.
 					var memos = JSON.parse(result.memo);
@@ -78,7 +78,7 @@ var user = {
 					user.feedback.html(user.cloud.refreshed);
 				} else {
 					sync_direction = 'pull';
-					console.log("PULL: save local content to remote.");
+					//console.log("PULL: save local content to remote.");
 					//user.feedback.text('Saved to server.');
 					user.feedback.html(user.cloud.done);
 				}
